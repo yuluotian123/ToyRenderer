@@ -1,0 +1,41 @@
+{
+  "sceneID": "ToyRenderer",
+
+  "shaders": [
+    {
+      "Name": "PBRLit",
+      "IsComputer": false,
+      "VertexPath": "pbrLitVs.glsl",
+      "FragementPath": "pbrLitFs.glsl",
+      "GeometryPath": ""
+    }
+  ],
+
+  "materials": [
+    {
+      "Name": "FirstPBR",
+      "Type": "PBRMaterial",
+      "UsingShader": "PBRLit"
+    }
+  ],
+
+  "models": [
+    {
+      "Material": "FirstPBR",
+      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/Sponza/Sponza.gltf",
+      "Position": [ 0.0, 0.0, 0.0 ],
+      "Rotation": [ 0.0, 1.0, 1.0, 1.0 ],
+      "Scaling": [ 0.03, 0.03, 0.03 ]
+    }
+  ],
+
+  "lights": [
+    {
+      "Type": "DirectionalLight",
+      "Color": [ 1.0, 0.0, 0.0 ],
+      "Intensity": 10.0,
+      "Direction": [-0.0,-1.0,-1.0]
+    }
+  ]
+
+}

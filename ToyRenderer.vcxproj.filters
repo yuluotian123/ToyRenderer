@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{da16d5cb-a46e-4e97-99ef-a1f3c0731333}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Engine\Engine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Manager\DisplayManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Manager\InputManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Manager\RenderManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Manager\SceneManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OpenGLInterface\Shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OpenGLInterface\Mesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OpenGLInterface\Texture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OpenGLInterface\Model.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OpenGLInterface\Material.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OpenGLInterface\Camera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Manager\Scene.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Base\Singleton.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OpenGLInterface\RenderTarget.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Base\Gameobject.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Base\Common.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Manager\MaterialSystem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="materials\PBRMaterial.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Base\Register.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OpenGLInterface\Light.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OpenGLInterface\RenderContext.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\OpenGLInterface\Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Manager\DisplayManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Engine.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Manager\InputManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenGLInterface\Material.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenGLInterface\Mesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenGLInterface\Model.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Manager\RenderManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenGLInterface\RenderTarget.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Manager\Scene.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Manager\SceneManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenGLInterface\Shader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenGLInterface\Texture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Manager\MaterialSystem.cpp" />
+    <ClCompile Include="materials\PBRMaterial.cpp" />
+    <ClCompile Include="src\Base\Register.cpp" />
+    <ClCompile Include="src\OpenGLInterface\Light.cpp" />
+    <ClCompile Include="src\OpenGLInterface\RenderContext.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resource\Shaders\pbrLitVs.glsl" />
+    <None Include="resource\Shaders\pbrLitFs.glsl" />
+    <None Include="resource\Scenes\ToyRenderer.json" />
+  </ItemGroup>
+</Project>
