@@ -163,11 +163,13 @@
     <ClInclude Include="include\OpenGLInterface\RenderTarget.h" />
     <ClInclude Include="include\Manager\MaterialSystem.h" />
     <ClInclude Include="include\OpenGLInterface\Light.h" />
+    <ClInclude Include="include\Manager\LightSystem.h" />
     <ClInclude Include="materials\PBRMaterial.h" />
     <ClInclude Include="include\Base\Register.h" />
     <ClInclude Include="include\OpenGLInterface\RenderContext.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Manager\LightSystem.cpp" />
     <ClCompile Include="src\OpenGLInterface\RenderContext.cpp" />
     <ClCompile Include="src\OpenGLInterface\Light.cpp" />
     <ClCompile Include="materials\PBRMaterial.cpp" />

@@ -171,8 +171,6 @@ void DisplayManager::ShowLightList()
             ImGui::AlignTextToFramePadding();
             ImGui::InputFloat3("##value", (float*)&light->color);
 
-
-
             ImGui::PopID();
         }
 
@@ -318,20 +316,14 @@ void DisplayManager::ShowMeshes(std::shared_ptr<Mesh> mesh,int id, int modelid)
     ImGui::AlignTextToFramePadding();
     bool node_open = ImGui::TreeNode("Mesh","Mesh_%d",id);
     ImGui::TableSetColumnIndex(1);
-    if (ImGui::Button("Reset")) RESET = (id+1)*(modelid+1);
+    if (ImGui::Button("Reset")) RESET = (id+1)*(modelid*100+1);
     if (node_open) {
-        ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0);
-        ImGui::Text(mesh->getMaterial()->getMaterialType().c_str());
-        ImGui::TableSetColumnIndex(1);
-        ImGui::Text(mesh->getMaterial()->getShader()->VPath.c_str());
-        ImGui::Text(mesh->getMaterial()->getShader()->FPath.c_str());
-        ImGui::Text(mesh->getMaterial()->getShader()->GPath.c_str());
-
+        //能够更改材质参数 还没想好怎么写
+        mesh->getMaterial()->ShowMaterialProperties((id * 100 + 1) * (modelid*100+1));
         ImGui::TreePop();
     }
 
-    if (RESET == (id + 1) * (modelid + 1)) ResetMaterial(mesh, &RESET);
+    if (RESET == (id + 1) * (modelid*100 + 1)) ResetMaterial(mesh, &RESET);
 
     ImGui::PopID();
 }

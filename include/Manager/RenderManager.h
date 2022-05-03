@@ -17,7 +17,7 @@ public:
 private:
 	RenderManager() {};
 	std::shared_ptr<Camera> Rendercamera;
-	std::shared_ptr<Scene> Scene;
+	std::shared_ptr<Scene> curScene;
 
 	RenderContext context;
 };

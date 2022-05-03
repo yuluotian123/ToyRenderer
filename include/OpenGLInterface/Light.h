@@ -18,6 +18,7 @@ class DirectionalLight :public Light {
 public:
 	glm::vec3 direction = glm::vec3(-1.f);
 
+
 };
 
 class PointLight :public Light {

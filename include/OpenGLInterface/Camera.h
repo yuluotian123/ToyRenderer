@@ -27,7 +27,7 @@ public:
     void ProcessKeyboard(Camera_Movement direction, float deltaTime);
     void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
     void ProcessMouseScroll(double yoffset);
-    void ProcessArcBall(float xoffset, float yoffset);
+    //void ProcessArcBall(float xoffset, float yoffset);
 
 public:
     Camera(glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
@@ -64,6 +64,8 @@ public:
 
     glm::vec3* GetPositionp() { return &Position; };
     float* getSpeedp() { return &MovementSpeed; };
+
+    const glm::vec3& GetPosition() { return Position; };
 private:
     void updateCameraVectors();
 

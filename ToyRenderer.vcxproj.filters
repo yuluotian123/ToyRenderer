@@ -73,6 +73,9 @@
     <ClInclude Include="include\OpenGLInterface\RenderContext.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\Manager\LightSystem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OpenGLInterface\Camera.cpp">
@@ -122,6 +125,7 @@
     <ClCompile Include="src\Base\Register.cpp" />
     <ClCompile Include="src\OpenGLInterface\Light.cpp" />
     <ClCompile Include="src\OpenGLInterface\RenderContext.cpp" />
+    <ClCompile Include="src\Manager\LightSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\Shaders\pbrLitVs.glsl" />

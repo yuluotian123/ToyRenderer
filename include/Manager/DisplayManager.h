@@ -8,6 +8,7 @@ class Camera;
 class Scene;
 class Mesh;
 class Model;
+class Material;
 class DisplayManager:public Singleton<DisplayManager>
 {
 	friend class Singleton<DisplayManager>;

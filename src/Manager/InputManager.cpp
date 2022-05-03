@@ -61,16 +61,17 @@ void InputManager::glfw_keyInput(GLFWwindow* window, float deltaTime)
 
 void InputManager::glfw_mouseInput(GLFWwindow* window, float deltatime)
 {
-	if(glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_RIGHT)== GLFW_PRESS)
+	if(glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_LEFT)== GLFW_PRESS)
 	{ 
 		float lastX = 0.5f * ImGui::GetIO().MouseDelta.x;
 		float lastY = -0.5f * ImGui::GetIO().MouseDelta.y;
 		UsingCamera->ProcessMouseMovement(lastX, lastY);
 	}
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-		float lastX = ImGui::GetIO().MouseDelta.x;
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) 
+	{
+		/*float lastX = ImGui::GetIO().MouseDelta.x;
 		float lastY = ImGui::GetIO().MouseDelta.y;
-		UsingCamera->ProcessArcBall(lastX,lastY);
+		UsingCamera->ProcessArcBall(lastX,lastY);*/
 	}
 }
 

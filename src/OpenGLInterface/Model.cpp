@@ -4,9 +4,16 @@
 void Model::Draw() const
 {
     if (meshes.empty()) return;
-    for (auto mesh : meshes)
+    for (auto& mesh : meshes)
         mesh->Draw();
 
+}
+
+void Model::Draw(Shaderid shaderid) const
+{
+    if (meshes.empty()) return;
+    for (auto& mesh : meshes)
+        mesh->Draw(shaderid);
 }
 
 void Model::Update(float DeltaTime)
@@ -19,7 +26,7 @@ void Model::SetMaterials(const Materialid& Materialid)
         printf("There is no mesh in this model:%s.\n",directory.c_str());
         return;
     }
-    for (auto mesh : meshes) {
+    for (auto& mesh : meshes) {
         mesh->setMaterial(Materialid);
     }
 }
@@ -165,14 +172,18 @@ void Model::processTextures(const aiMesh* mesh, const aiScene* scene,std::vector
         return;
     aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
+    //目前只接受这些
     loadTextures(mat,Textures,aiTextureType_DIFFUSE,"DiffuseMap");
+    loadTextures(mat, Textures, aiTextureType_AMBIENT, "AmbientMap");
     loadTextures(mat,Textures,aiTextureType_SPECULAR,"SpecularMap");
+    loadTextures(mat, Textures, aiTextureType_NORMALS, "NormalMap");
     loadTextures(mat, Textures, aiTextureType_HEIGHT,"HeightMap");
     loadTextures(mat, Textures, aiTextureType_SHININESS,"ShinessMap");
-    loadTextures(mat, Textures, aiTextureType_AMBIENT,"AmbientMap");
+    loadTextures(mat, Textures, aiTextureType_EMISSIVE,"EmissiveMap");
+    loadTextures(mat, Textures, aiTextureType_UNKNOWN, "UnKnownMap");
 }
 
-void Model::loadTextures(aiMaterial* mat, std::vector<Texture>& textures, aiTextureType type, std::string typeName)
+void Model::loadTextures(aiMaterial* mat, std::vector<Texture>& textures, aiTextureType type, const std::string& typeName)
 {
     int TextureCount = mat->GetTextureCount(type);
     int TextureIndex = -1;

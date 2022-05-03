@@ -11,7 +11,7 @@
 bool RenderManager::StartUp()
 {
 	Rendercamera = SceneManager::getOrCreateInstance()->getCurrentScene()->fecthOrCreateMainCamera();
-	Scene = SceneManager::getOrCreateInstance()->getCurrentScene();
+	curScene = SceneManager::getOrCreateInstance()->getCurrentScene();
 
 	return true;
 }
@@ -24,19 +24,12 @@ void RenderManager::ShutDown()
 void RenderManager::Render(float DeltaTime)
 {
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	context.setupCameraProperties(Rendercamera);
 
-	for (auto model : Scene->getModels()) 
-	{
-		context.setupModelMatrix(model);
-
-		model->Draw();
-	}
-
+	context.setupLightProperties(curScene->getLights());
 	
+	context.DrawOpaqueRenderList(curScene->getModels());
 }

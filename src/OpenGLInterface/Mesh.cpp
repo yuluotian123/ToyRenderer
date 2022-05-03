@@ -3,6 +3,7 @@
 #include "OpenGLInterface\Mesh.h"
 #include "Manager\MaterialSystem.h"
 #include "OpenGLInterface\Material.h"
+#include "OpenGLInterface\Shader.h"
 
 void Mesh::setupMesh()
 {
@@ -58,6 +59,7 @@ void Mesh::setMaterial(const  Materialid& Type)//创建新材质 （以及替换旧的材质）
                 break;
             }
         }
+        
     }
 
     material = MaterialSystem::getOrCreateInstance()->CreateMaterial(Type);
@@ -77,6 +79,15 @@ void Mesh::Draw() const
 
     material->UpdateUniform();
 
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
+void Mesh::Draw(Shaderid shaderid) const
+{
+    MaterialSystem::getOrCreateInstance()->getRegisterShaderList()[shaderid]->Use();
+    
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

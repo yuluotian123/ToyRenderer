@@ -23,5 +23,8 @@ public:
 
     unsigned int ID = 0;
     std::string VPath, FPath, GPath;
+
+    bool useCamera = true;
+    bool useLight = true; 
 };
 

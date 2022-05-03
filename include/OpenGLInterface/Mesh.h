@@ -38,9 +38,10 @@ public:
 	void setupMesh();//设置attribs
 
 	void setMaterial(const Materialid& Type);//设置每个Mesh的material
-	void Draw() const;//更新uniform以及绘制mesh
+	void Draw() const;//更新uniform以及绘制mesh(采用material内置的参数)
+	void Draw(Shaderid shaderid) const; //用shader来绘制mesh
 
-	std::shared_ptr<Material> getMaterial() { return material; };//获取当前的material
+	std::shared_ptr<Material>& getMaterial() { return material; };//获取当前的material
 private:
 	unsigned int VAO,EBO,VBO;
 

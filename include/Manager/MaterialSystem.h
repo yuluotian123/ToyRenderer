@@ -5,9 +5,7 @@
 #include <vector>
 #include <string>
 #include <functional>
-
-typedef int Shaderid;
-typedef std::string Materialid;
+#include <Base\Common.h>
 
 #define FUNC std::function<std::shared_ptr<void>(void)>
 
@@ -19,16 +17,19 @@ class MaterialSystem :public Singleton<MaterialSystem>
 public:
 	~MaterialSystem() {};
 
-	void Register(const std::string& class_name, FUNC&& generator);//注册material类W
+	void Register(const std::string& class_name, FUNC&& generator);//注册material类
 	//TO DO: computershader
 	//shaderName为绑定的材质类型
 	Shaderid registerShader(const std::string& VPath, const std::string& FPath, const std::string& GPath = "");//添加Shader到Shader List
-	const Materialid registerMaterial(Shaderid shader, const std::string& materialType);
+	const Materialid registerMaterial(Shaderid shader, const std::string& materialType);//添加使用已注册shader和已声明materialType的material
 
 	std::shared_ptr<Material> CreateMaterial(const Materialid& id);
 
 	std::unordered_map<Shaderid, std::shared_ptr<Shader>>& getRegisterShaderList() { return ShaderList; };
 	std::unordered_map < Materialid, std::vector<std::shared_ptr<Material >>>& getRegisterMaterialList(){ return MaterialList; };
+
+	std::shared_ptr<Shader> getRegisterShaderByID(Shaderid id);
+	std::shared_ptr<Shader> getRegisterShaderByMaterialID(const Materialid& id);
 private:
 	std::pair<std::string, int> ProcessMaterialid(const Materialid& id);//将materialid处理成material类名+shaderid
 private:

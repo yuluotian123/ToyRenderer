@@ -52,6 +52,23 @@ std::shared_ptr<Material> MaterialSystem::CreateMaterial(const Materialid& id)
 
 }
 
+std::shared_ptr<Shader> MaterialSystem::getRegisterShaderByID(Shaderid id)
+{
+	if (ShaderList.find(id) == ShaderList.end()) {
+		printf("can't find shader has this shaderid.\n");
+		return nullptr;
+	}
+
+	return ShaderList[id];
+}
+
+std::shared_ptr<Shader> MaterialSystem::getRegisterShaderByMaterialID(const Materialid& id)
+{
+	Shaderid sid = ProcessMaterialid(id).second;
+
+	return getRegisterShaderByID(sid);
+}
+
 std::pair<std::string, int> MaterialSystem::ProcessMaterialid(const Materialid& id)
 {
 	int place = 0;

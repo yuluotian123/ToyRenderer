@@ -5,6 +5,7 @@
 #include <Assimp/postprocess.h>
 #include <memory>
 #include <vector>
+#include <unordered_set>
 
 //考虑将transform新建为一个单独的类
 struct Transform {
@@ -39,6 +40,7 @@ public:
     }
 
     void Draw() const;//模型的渲染，调用mesh的draw方法
+    void Draw(Shaderid shaderid) const;//用shader来进行模型渲染
     void Update(float DeltaTime); //处理模型的移动等动画
 
     void SetMaterials(const Materialid& Materialid);//一次性设置Model中所有mesh的material
@@ -66,11 +68,12 @@ private:
     void processVertex(const aiMesh* mesh, std::vector<Vertex>& vertices);
     void processIndices(const aiMesh* mesh, std::vector<unsigned int>& indices);
     void processTextures(const aiMesh* mesh, const aiScene* scene, std::vector<Texture>& textures);
-    void loadTextures(aiMaterial* material, std::vector<Texture>& textures, aiTextureType type, std::string typeName);
+    void loadTextures(aiMaterial* material, std::vector<Texture>& textures, aiTextureType type, const std::string& typeName);
 private:
     std::string directory;
     std::vector<Texture> load_textures;
     std::vector<std::shared_ptr<Mesh>> meshes;
+    std::unordered_set<Materialid> materialList;//用于查找当前model用到的所有material？（还没想好怎么设计）
 
     glm::mat4 modelMatrix;
     Transform trans;

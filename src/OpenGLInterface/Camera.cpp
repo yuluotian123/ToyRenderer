@@ -45,43 +45,45 @@ void Camera::ProcessMouseScroll(double yoffset)
         Zoom = 45.0f;
 }
 
-void Camera::ProcessArcBall(float x, float y)//不是很丝滑 
-{
-    x /= SCREEN_WIDTH * 0.1f;
-    y /= SCREEN_HEIGHT * 0.1f;
-    float zx = sqrt(1 - x * x);
-    float zy = sqrt(1 - y * y);
-
-    glm::vec3 start{0.f,0.f,1.f};
-    //把角度分成沿着相机坐标轴x轴和y轴 然后分别计算
-    glm::vec3 endX = glm::vec3{ x,0,zx };
-    glm::vec3 endY = glm::vec3{ 0,y,zy };
-
-    float Xangle = 10.f * acos(glm::dot(start, endX));//乘10是因为之前的变化太小
-    float Yangle = 10.f * acos(glm::dot(start, endY));
-
-    //因为点乘不会分正负 所以对x，y的正负进行判断
-    if (x < 0) {
-        Yaw += Xangle;
-        Position -= sin(glm::radians(Xangle)) *5.f* Right;
-    }
-    else {
-        Yaw -= Xangle;
-        Position += sin(glm::radians(Xangle)) * 5.f * Right;
-    }
-
-    if (y < 0) {
-        Pitch += Yangle;
-        Position += sin(glm::radians(Yangle)) * 5.f * Up;
-    }
-    else {
-        Pitch -= Yangle;
-        Position -= sin(glm::radians(Yangle)) * 5.f * Up;
-    }
-
-    //更新相机的朝向
-    updateCameraVectors();
-}
+//void Camera::ProcessArcBall(float x, float y)//不是很丝滑 
+//{
+//    x /= SCREEN_WIDTH * 0.1f;
+//    y /= SCREEN_HEIGHT * 0.1f;
+//    float zx = sqrt(1 - x * x);
+//    float zy = sqrt(1 - y * y);
+//
+//    glm::vec3 start{0.f,0.f,1.f};
+//    //把角度分成沿着相机坐标轴x轴和y轴 然后分别计算
+//    glm::vec3 endX = glm::vec3{ x,0,zx };
+//    glm::vec3 endY = glm::vec3{ 0,y,zy };
+//
+//    float Xangle = 10.f * acos(glm::dot(start, endX));//乘10是因为之前的变化太小
+//    float Yangle = 10.f * acos(glm::dot(start, endY));
+//
+//    //因为点乘不会分正负 所以对x，y的正负进行判断
+//    if (x < 0) {
+//        Yaw += Xangle;
+//        Position -= sin(glm::radians(Xangle)) *5.f* Right;
+//    }
+//    else {
+//        Yaw -= Xangle;
+//        Position += sin(glm::radians(Xangle)) * 5.f * Right;
+//    }
+//
+//    if (y < 0) {
+//        Pitch += Yangle;
+//        Position -= sin(glm::radians(Yangle)) * 5.f * Up;
+//        Position += (1.0f-cos(glm::radians(Yangle))) * 5.f * Front;
+//    }
+//    else {
+//        Pitch -= Yangle;
+//        Position += sin(glm::radians(Yangle)) * 5.f * Up;
+//        Position += (1.0f - cos(glm::radians(Yangle))) * 5.f * Front;
+//    }
+//
+//    //更新相机的朝向
+//    updateCameraVectors();
+//}
 
 glm::mat4 Camera::GetViewMatrix()
 {
