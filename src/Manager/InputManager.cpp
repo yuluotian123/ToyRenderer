@@ -13,7 +13,7 @@ bool InputManager::StartUp()
 {
 	GLFWwindow* pWindow = DisplayManager::getOrCreateInstance()->getWindow();
 
-	UsingCamera = SceneManager::getOrCreateInstance()->getCurrentScene()->fecthOrCreateMainCamera();
+	UsingCamera = SceneManager::getOrCreateInstance()->getCurrentScene()->getMainCamera();
 
 	registerCallBack(pWindow);
 

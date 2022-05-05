@@ -5,11 +5,14 @@
 #include "stb_image.h"
 #include "gli\gli.hpp"
 #include <iostream>
+#include "Manager\MaterialSystem.h"
+#include "OpenGLInterface\Shader.h"
+
+Texture Texture::Invalid;
 
 void Texture::loadTexture(const std::string& filePath, bool sRGB)
 {
 	path = filePath;
-    std::replace(path.begin(), path.end(), '\\', '/');
     std::string fileExtension = getFileExtension(filePath);
     if (fileExtension == "dds") {
         ID = loadDDSTexture(path.c_str());
@@ -18,7 +21,7 @@ void Texture::loadTexture(const std::string& filePath, bool sRGB)
         stbi_set_flip_vertically_on_load(true);
 
         glGenTextures(1, &ID);
-        unsigned char* data = stbi_load(path.c_str(), &width, &height, &nComponents, 0);
+        GLvoid* data = stbi_load(filePath.c_str(), &width, &height, &nComponents, 0);
         if (data) {
             GLenum format = GL_RGBA;
             GLenum internalFormat = GL_RGBA;
@@ -210,4 +213,132 @@ std::string Texture::getFileExtension(const std::string& filePath)
         return filePath.substr(indexLocation + 1, filePath.length() - indexLocation);
     }
     return "";
+}
+
+void Texture::Free() {
+    if (ID == 0) return;
+
+    glDeleteTextures(1, &ID);
+    typeName = "None";
+    path = "";
+};
+
+const glm::mat4 CubeMap::captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+const glm::mat4 CubeMap::captureViews[18] =
+{
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+};
+const std::string CubeMap::fileHandleForFaces[6] = { "right.jpg", "left.jpg", "top.jpg",
+                                                     "bottom.jpg", "front.jpg", "back.jpg" };//要求起名这么起
+const unsigned int CubeMap::numSidesInCube = 6;
+
+Cube CubeMap::cubeMapCube;
+
+void CubeMap::loadCubeMap(const std::string& folderPath)
+{
+    stbi_set_flip_vertically_on_load(false);
+
+    std::string path = folderPath + "/";
+    glGenTextures(1, &ID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
+
+    for (unsigned int i = 0; i < numSidesInCube; ++i) {
+        std::string currentFile = path + fileHandleForFaces[i];
+        GLvoid* data = stbi_load(currentFile.c_str(), &width, &height, &nComponents, 0);
+
+        if (data) {
+            //Enums iteration based on OpenGL specification
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        }
+        else {
+            printf("Texture failed to load at path: %s \n", currentFile.c_str());
+        }
+        stbi_image_free(data);
+    }
+
+    //Texture parameters
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    typeName = "cubemap";
+
+    stbi_set_flip_vertically_on_load(true);
+}
+
+void CubeMap::generateCubeMap(const int width, const int height, CubeMapType cubeType)
+{
+    glGenTextures(1, &ID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
+
+    switch (cubeType) {
+    case  CubeMapType::SHADOW_MAP:
+        for (unsigned int i = 0; i < numSidesInCube; ++i) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0, GL_DEPTH_COMPONENT, width, height, 0,
+                GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        }
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        break;
+
+    case  CubeMapType::HDR_MAP:
+        for (unsigned int i = 0; i < numSidesInCube; ++i) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0, GL_RGB32F,
+                width, height, 0,
+                GL_RGB, GL_FLOAT, NULL);
+        }
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        break;
+    }
+
+    this->width = width;
+    this->height = height;
+    path = ""; //Generated so no file path
+    typeName = "cubemap";
+}
+
+void CubeMap::equiRectangularToCubeMap(const unsigned int equirectangularMap, Shaderid transformShaderid)
+{
+    std::shared_ptr<Shader> trshader = MaterialSystem::getOrCreateInstance()->getRegisterShaderByID(transformShaderid);
+
+    trshader->Use();
+    trshader->useCamera = false;
+    trshader->useLight = false;
+
+    trshader->setInt("equirectangularMap", 0);
+    trshader->setMat4("captureProjection", captureProjection);
+    
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, equirectangularMap);
+
+    for (unsigned int i = 0; i < numSidesInCube; i++) {
+        trshader->setMat4("captureView", captureViews[i]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, ID, 0);
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        cubeMapCube.draw();
+    }
+
+
 }

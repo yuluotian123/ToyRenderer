@@ -11,6 +11,7 @@ typedef std::string Materialid;
 class Light;
 class Model;
 class Camera;
+class Skybox;
 class Scene
 {
 public:
@@ -24,7 +25,9 @@ public:
 
 	std::vector<std::shared_ptr<Light>>& getLights() { return lights; };
 
-	std::shared_ptr<Camera> fecthOrCreateMainCamera();
+	std::shared_ptr<Skybox> getSkybox() { return MainSkybox; };
+
+	std::shared_ptr<Camera> getMainCamera();
 
 	Materialid getMaterialidByName(const std::string& Name);
 	Shaderid getShaderidByName(const std::string& Name);
@@ -41,12 +44,13 @@ private:
 	void loadCamera(json scenejson);
 	void loadSkyBox(json scenejson);
 private:
-	std::unordered_map<std::string,Shaderid> shaderidList;//将每个注册的shaderid找到一个name来对应，用来在ui界面显示
-	std::unordered_map<std::string,Materialid> materialidList;//将每个注册的materialid找到一个name来对应，用来在ui界面显示
+	std::unordered_map<std::string,Shaderid> shaderidList;//将每个用户注册的shaderid找到一个name来对应，用来在ui界面显示
+	std::unordered_map<std::string,Materialid> materialidList;//将每个用户注册的materialid找到一个name来对应，用来在ui界面显示
 
 	std::vector<std::shared_ptr<Model>> models;
 	std::vector<std::shared_ptr<Light>> lights;
-	std::shared_ptr<Camera> MainCamera=nullptr;
+	std::shared_ptr<Camera> MainCamera = nullptr;
+	std::shared_ptr<Skybox> MainSkybox = nullptr;
 
 	std::string m_sceneID;
 };

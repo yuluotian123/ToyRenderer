@@ -32,8 +32,10 @@ public:
 		this->indices = indices;
 		this->textures = textures;
 		this->matproperties = matproperties;
+
 		setupMesh();
 	}
+	~Mesh();
 
 	void setupMesh();//…Ë÷√attribs
 

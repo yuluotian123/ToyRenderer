@@ -5,6 +5,13 @@
 #include "OpenGLInterface\Material.h"
 #include "OpenGLInterface\Shader.h"
 
+Mesh::~Mesh()
+{
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+}
+
 void Mesh::setupMesh()
 {
     glGenVertexArrays(1, &VAO);
@@ -86,7 +93,7 @@ void Mesh::Draw() const
 
 void Mesh::Draw(Shaderid shaderid) const
 {
-    MaterialSystem::getOrCreateInstance()->getRegisterShaderList()[shaderid]->Use();
+    MaterialSystem::getOrCreateInstance()->getRegisterShaderByID(shaderid)->Use();
     
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);

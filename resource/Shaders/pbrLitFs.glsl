@@ -3,14 +3,14 @@ uniform sampler2D DiffuseMap0;
 uniform sampler2D NormalMap0;
 uniform sampler2D MetalMap0;
 uniform sampler2D RoughMap0;
-uniform sampler2D UnKnownMap0;//实际上是metalroughmap
+uniform sampler2D MetalRoughMap0;//实际上是metalroughmap
 
 uniform float Metallic;
 uniform float Roughness;
 uniform bool useMetalMap;
 uniform bool useRoughMap;
 uniform bool useNormalMap;
-uniform bool useUnKnownMap;
+uniform bool useMetalRoughMap;
 
 uniform vec3 CameraPos;
 uniform float ScreenWidth;
@@ -127,9 +127,9 @@ void main()
 	 if(useMetalMap){
 	 metal = texture(MetalMap0,tex).r;
      }
-     if(useUnKnownMap){
-     metal  =  texture(UnKnownMap0,tex).b;
-     rough = texture(UnKnownMap0,tex).g;
+     if(useMetalRoughMap){
+     metal  =  texture(MetalRoughMap0,tex).b;
+     rough = texture(MetalRoughMap0,tex).g;
      }
 
      vec3 color =  DirectPBR(N,V,albedo,rough,metal);

@@ -6,7 +6,7 @@ class Singleton
 {
 public:
 	virtual ~Singleton() = default;
-	static std::shared_ptr<T> getOrCreateInstance()
+	static std::shared_ptr<T>& getOrCreateInstance()
 	{
 		if (!m_pInstance)
 			m_pInstance.reset(new T());    

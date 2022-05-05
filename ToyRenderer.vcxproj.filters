@@ -76,6 +76,12 @@
     <ClInclude Include="include\Manager\LightSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\OpenGLInterface\Skybox.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OpenGLInterface\Primitive.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OpenGLInterface\Camera.cpp">
@@ -124,12 +130,18 @@
     <ClCompile Include="materials\PBRMaterial.cpp" />
     <ClCompile Include="src\Base\Register.cpp" />
     <ClCompile Include="src\OpenGLInterface\Light.cpp" />
-    <ClCompile Include="src\OpenGLInterface\RenderContext.cpp" />
     <ClCompile Include="src\Manager\LightSystem.cpp" />
+    <ClCompile Include="src\Manager\Skybox.cpp" />
+    <ClCompile Include="src\OpenGLInterface\Primitive.cpp" />
+    <ClCompile Include="src\OpenGLInterface\RenderContext.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\Shaders\pbrLitVs.glsl" />
     <None Include="resource\Shaders\pbrLitFs.glsl" />
     <None Include="resource\Scenes\ToyRenderer.json" />
+    <None Include="resource\Shaders\EquiRectangularToCubeFs.glsl" />
+    <None Include="resource\Shaders\EquiRectangularToCubeVs.glsl" />
+    <None Include="resource\Shaders\skyBoxVs.glsl" />
+    <None Include="resource\Shaders\skyBoxFs.glsl" />
   </ItemGroup>
 </Project>

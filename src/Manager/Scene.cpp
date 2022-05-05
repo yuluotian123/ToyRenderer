@@ -3,14 +3,16 @@
 #include "OpenGLInterface\Model.h"
 #include "Manager\MaterialSystem.h"
 #include "OpenGLInterface\Light.h"
+#include "OpenGLInterface\Skybox.h"
 #include <iostream>
 #include <fstream>
+
 //TO DO: 反序列化（懒得做）
 Scene::Scene(std::string& sceneID)
 {
     m_sceneID = sceneID;
 
-    load_Error != loadContext();
+    load_Error = !loadContext();
 }
 
 bool Scene::loadContext()
@@ -55,7 +57,7 @@ bool Scene::loadContext()
 void Scene::loadCamera(json scenejson)
 {
     //TO DO：用json设定内容
-    MainCamera = fecthOrCreateMainCamera();
+    MainCamera = getMainCamera();
 }
 
 void Scene::loadShaderandMaterial(json scenejson)
@@ -99,7 +101,6 @@ void Scene::loadModels(json scenejson)
         initTrans.scaling = glm::vec3((float)model["Scaling"][0], (float)model["Scaling"][1], (float)model["Scaling"][2]);
         initTrans.angle = glm::radians((float)model["Rotation"] [0] );
         initTrans.rotationAxis= glm::vec3((float)model["Rotation"][1], (float)model["Rotation"][2], (float)model["Rotation"][3]);
-
         std::shared_ptr<Model> curmodel=std::make_shared<Model>(model["Path"], initTrans);
         if (model["Material"] != "Null"&&model["Material"]!="")
             curmodel->SetMaterials(materialidList[model["Material"]]);
@@ -109,6 +110,15 @@ void Scene::loadModels(json scenejson)
 
 void Scene::loadSkyBox(json scenejson)
 {
+    CubeMap::cubeMapCube.setupMesh();
+    json skyboxjson = scenejson["skybox"];
+    if (skyboxjson.size() > 0) {
+        std::string path = skyboxjson[0]["Path"];
+        bool ishdr = skyboxjson[0]["Hdr"];
+        unsigned int resolution = skyboxjson[0]["Resolution"];
+        MainSkybox = std::make_shared<Skybox>();
+        MainSkybox->setup(path, ishdr, resolution);
+    }
 
 }
 
@@ -178,7 +188,7 @@ std::string Scene::getShaderNameByShaderid(Shaderid shaderid)
     return "";
 }
 
-std::shared_ptr<Camera> Scene::fecthOrCreateMainCamera()
+std::shared_ptr<Camera> Scene::getMainCamera()
 {
     if (!MainCamera)
         MainCamera = std::make_shared<Camera>();

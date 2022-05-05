@@ -46,18 +46,18 @@ void Model::UpdateModelMatrix()
 }
 
 //仿照learningOpenGL实现
-void Model::loadModel(std::string path)
+void Model::loadModel(const std::string& path)
 {
 	Assimp::Importer ModelImpoter;
-	const aiScene *scene= ModelImpoter.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
-	if (!scene || !scene->mRootNode || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE)
+    m_Scene = ModelImpoter.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
+	if (!m_Scene || !m_Scene->mRootNode || m_Scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE)
 	{
 		std::cerr << "error: " << ModelImpoter.GetErrorString() << std::endl;
 		return;
 	}
 	directory = path.substr(0, path.find_last_of('/'));
 
-	processNode(scene->mRootNode, scene);
+	processNode(m_Scene->mRootNode, m_Scene);
 }
 
 
@@ -85,17 +85,17 @@ std::shared_ptr<Mesh>  Model::processMesh(aiMesh* mesh, const aiScene* scene)
 
     processVertex(mesh, vertices);
     processIndices(mesh, indices);
-    processMatProperties(mesh, scene, matproperties);
-    processTextures(mesh, scene,textures);
+    processMatProperties(mesh,  matproperties);
+    processTextures(mesh, textures);
 
     return std::make_shared<Mesh>(vertices,indices,textures,matproperties);
 }
 
-void Model::processMatProperties(const aiMesh* mesh, const aiScene* scene, MaterialProperties& matproperties)
+void Model::processMatProperties(const aiMesh* mesh, MaterialProperties& matproperties)
 {
     if (mesh->mMaterialIndex < 0)
         return;
-    aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+    aiMaterial* mat = m_Scene->mMaterials[mesh->mMaterialIndex];
     aiColor3D AmbientColor, DiffuseColor, SpecularColor;
     float Shininess = 0.0f, Refracti = 0.0f;
     mat->Get(AI_MATKEY_COLOR_AMBIENT, AmbientColor);
@@ -166,11 +166,11 @@ void Model::processIndices(const aiMesh* mesh, std::vector<unsigned int>& indice
     }
 }
 
-void Model::processTextures(const aiMesh* mesh, const aiScene* scene,std::vector<Texture>& Textures)
+void Model::processTextures(const aiMesh* mesh, std::vector<Texture>& Textures)
 {
     if (mesh->mMaterialIndex < 0)
         return;
-    aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+    aiMaterial* mat = m_Scene->mMaterials[mesh->mMaterialIndex];
 
     //目前只接受这些
     loadTextures(mat,Textures,aiTextureType_DIFFUSE,"DiffuseMap");
@@ -180,7 +180,7 @@ void Model::processTextures(const aiMesh* mesh, const aiScene* scene,std::vector
     loadTextures(mat, Textures, aiTextureType_HEIGHT,"HeightMap");
     loadTextures(mat, Textures, aiTextureType_SHININESS,"ShinessMap");
     loadTextures(mat, Textures, aiTextureType_EMISSIVE,"EmissiveMap");
-    loadTextures(mat, Textures, aiTextureType_UNKNOWN, "UnKnownMap");
+    loadTextures(mat, Textures, aiTextureType_UNKNOWN, "MetalRoughMap");
 }
 
 void Model::loadTextures(aiMaterial* mat, std::vector<Texture>& textures, aiTextureType type, const std::string& typeName)
@@ -194,6 +194,7 @@ void Model::loadTextures(aiMaterial* mat, std::vector<Texture>& textures, aiText
         mat->GetTexture(type, i, &Str);
         std::string TextureName = Str.C_Str();
         std::string TexturePath = directory + "/" + TextureName;
+        std::replace(TexturePath.begin(), TexturePath.end(), '\\', '/');
         bool Skip = false;
         int LoadedTextureCount = static_cast<int>(load_textures.size());
         for (int k = 0; k < LoadedTextureCount; ++k)
@@ -201,7 +202,7 @@ void Model::loadTextures(aiMaterial* mat, std::vector<Texture>& textures, aiText
             if (TexturePath == load_textures[k].path)
             {
                 Skip = true;
-                load_textures[k].uniformName = typeName+ std::to_string(++TextureIndex);
+                load_textures[k].typeName = typeName+ std::to_string(++TextureIndex);
                 textures.push_back(load_textures[k]);
                 break;
             }
@@ -209,8 +210,8 @@ void Model::loadTextures(aiMaterial* mat, std::vector<Texture>& textures, aiText
         if (!Skip)
         {
             Texture tex;
-            tex.loadTexture(TexturePath, true);
-            tex.uniformName = typeName + std::to_string(++TextureIndex);
+            tex.loadTexture(TexturePath, false);
+            tex.typeName = typeName + std::to_string(++TextureIndex);
             textures.push_back(tex);
             load_textures.push_back(tex);
         }

@@ -107,6 +107,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>G:\gitHubGameProject\ToyRenderer\materials;G:\gitHubGameProject\ToyRenderer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -167,14 +169,18 @@
     <ClInclude Include="materials\PBRMaterial.h" />
     <ClInclude Include="include\Base\Register.h" />
     <ClInclude Include="include\OpenGLInterface\RenderContext.h" />
+    <ClInclude Include="include\OpenGLInterface\Skybox.h" />
+    <ClInclude Include="include\OpenGLInterface\Primitive.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\OpenGLInterface\Primitive.cpp" />
+    <ClCompile Include="src\Manager\Skybox.cpp" />
     <ClCompile Include="src\Manager\LightSystem.cpp" />
-    <ClCompile Include="src\OpenGLInterface\RenderContext.cpp" />
     <ClCompile Include="src\OpenGLInterface\Light.cpp" />
     <ClCompile Include="materials\PBRMaterial.cpp" />
     <ClCompile Include="src\Base\Register.cpp" />
     <ClCompile Include="src\Manager\MaterialSystem.cpp" />
+    <ClCompile Include="src\OpenGLInterface\RenderContext.cpp" />
     <ClCompile Include="src\OpenGLInterface\RenderTarget.cpp" />
     <ClCompile Include="src\Manager\Scene.cpp" />
     <ClCompile Include="src\OpenGLInterface\Camera.cpp" />
@@ -192,8 +198,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\Scenes\ToyRenderer.json" />
+    <None Include="resource\Shaders\EquiRectangularToCubeFs.glsl" />
+    <None Include="resource\Shaders\EquiRectangularToCubeVs.glsl" />
     <None Include="resource\Shaders\pbrLitFs.glsl" />
     <None Include="resource\Shaders\pbrLitVs.glsl" />
+    <None Include="resource\Shaders\skyBoxFs.glsl" />
+    <None Include="resource\Shaders\skyBoxVs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

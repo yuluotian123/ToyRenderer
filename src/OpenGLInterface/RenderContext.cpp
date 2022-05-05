@@ -1,70 +1,111 @@
+#include "OpenGLInterface\RenderTarget.h"
 #include "OpenGLInterface\RenderContext.h"
 #include "Manager\MaterialSystem.h"
-#include "OpenGLInterface\Shader.h"
 #include "Manager\SceneManager.h"
-#include "OpenGLInterface\Camera.h"
 #include "OpenGLInterface\Model.h"
+#include "OpenGLInterface\Shader.h"
+#include "OpenGLInterface\Camera.h"
 #include "OpenGLInterface\Light.h"
-//TO DO：让这些东西只在需要的shader中update
+#include "OpenGLInterface\Skybox.h"
 
-void RenderContext::DrawOpaqueRenderList(const std::vector<std::shared_ptr<Model>>& models)
+bool RenderContext::Init()
 {
-	for (auto model : models)
-	{
+	curScene = SceneManager::getOrCreateInstance()->getCurrentScene();
+	SkyBoxshader = MaterialSystem::getOrCreateInstance()->registerShader("skyBoxVs.glsl", "skyBoxFs.glsl");
+
+	if (curScene->getSkybox() && curScene->getSkybox()->IsHDR())
+		InitSkyCubeMapFromHDR();
+
+	return true;
+}
+
+void RenderContext::DrawOpaqueRenderList()
+{
+	curScene = SceneManager::getOrCreateInstance()->getCurrentScene();
+
+	for (auto& model : curScene->getModels()) {
 		setupModelMatrix(model);
 		model->Draw();
 	}
 }
 
-void RenderContext::DrawOpaqueRenderList(const std::vector<std::shared_ptr<Model>>& models, Shaderid shaderid)
+void RenderContext::DrawOpaqueRenderList(Shaderid shaderid)
 {
-	for (auto model : models)
-	{
+	curScene = SceneManager::getOrCreateInstance()->getCurrentScene();
+
+	for (auto& model : curScene->getModels()) {
 		setupModelMatrix(model);
 		model->Draw(shaderid);
 	}
 }
 
-//TO DO：用UBO 
+void RenderContext::InitSkyCubeMapFromHDR()
+{
+	std::shared_ptr<Skybox> skybox = curScene->getSkybox();
+
+	EquiRecToCubeshader = MaterialSystem::getOrCreateInstance()->registerShader("EquiRectangularToCubeVs.glsl", "EquiRectangularToCubeFs.glsl");
+	EquiRecToCubeRT.createRenderTarget(skybox->getResolution(), skybox->getResolution(), RenderTarget::ENUM_TYPE_BASIC);
+	EquiRecToCubeRT.use();
+	skybox->fillCubeMapWithHDR(EquiRecToCubeshader);
+	EquiRecToCubeRT.UseDefault();
+
+}
+
+void RenderContext::DrawSkybox()
+{
+	curScene = SceneManager::getOrCreateInstance()->getCurrentScene();
+	std::shared_ptr<Skybox> skybox = curScene->getSkybox();
+	std::shared_ptr<Shader> shader = MaterialSystem::getOrCreateInstance()->getRegisterShaderByID(SkyBoxshader);
+
+	shader->Use();
+	shader->setInt("environmentMap",0);
+	skybox->draw();
+}
+
 void RenderContext::setupCameraProperties(std::shared_ptr<Camera> camera)
 {
-	for (auto shader : MaterialSystem::getOrCreateInstance()->getRegisterShaderList()){
-		if (shader.second->useCamera) {
-			shader.second->Use();
-			shader.second->setInt(CameraUniformNameList::Scrwidth, SCREEN_WIDTH);
-			shader.second->setInt(CameraUniformNameList::Scrheight, SCREEN_HEIGHT);
-			shader.second->setMat4(CameraUniformNameList::view, camera->GetViewMatrix());
-			shader.second->setMat4(CameraUniformNameList::projection, camera->GetProjectionMatrix());
-			shader.second->setMat4(CameraUniformNameList::invView, camera->GetInvViewMatrix());
-			shader.second->setMat4(CameraUniformNameList::invProjection, camera->GetInvProjectionMatrix());
-			shader.second->setVec3(CameraUniformNameList::CamPos, camera->GetPosition());
+	for (auto shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
+	{
+		if (shaderP.second->useCamera) {
+			shaderP.second->Use();
+			shaderP.second->setMat4(CameraUniformNameList::view, camera->GetViewMatrix());
+			shaderP.second->setMat4(CameraUniformNameList::projection, camera->GetProjectionMatrix());
+			shaderP.second->setMat4(CameraUniformNameList::invView, camera->GetInvViewMatrix());
+			shaderP.second->setMat4(CameraUniformNameList::invProjection, camera->GetInvProjectionMatrix());
+			shaderP.second->setVec3(CameraUniformNameList::CamPos, camera->GetPosition());
+			shaderP.second->setInt(CameraUniformNameList::Scrwidth,SCREEN_WIDTH);
+			shaderP.second->setInt(CameraUniformNameList::Scrheight, SCREEN_HEIGHT);
 		}
 	}
 }
 
-//TO DO 只更新model中含有的shader类型(或者把他放到draw方法里去)（没想到什么好办法）
 void RenderContext::setupModelMatrix(std::shared_ptr<Model> model)
 {
-	for (auto shader : MaterialSystem::getOrCreateInstance()->getRegisterShaderList()) {
-		shader.second->Use();
-		shader.second->setMat4(CameraUniformNameList::model, model->getModelMatrix());
+	for (auto shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
+	{
+		if (shaderP.second->useCamera) {
+			shaderP.second->Use();
+			shaderP.second->setMat4(CameraUniformNameList::model, model->getModelMatrix());
+		}
 	}
 }
 
-void RenderContext::setupLightProperties(const std::vector<std::shared_ptr<Light>>& lights)
+void RenderContext::setupLightProperties()
 {
-	for (auto shader : MaterialSystem::getOrCreateInstance()->getRegisterShaderList()) {
-		if (shader.second->useLight) {
-			shader.second->Use();
-			for (auto light : lights) {
+	curScene = SceneManager::getOrCreateInstance()->getCurrentScene();
+
+	for (auto shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
+	{
+		if (shaderP.second->useLight) {
+			for (auto& light : curScene->getLights()) {
 				if (light->type == "DirectionalLight") {
-					shader.second->setVec3("LightColor", light->color);
-					shader.second->setFloat("LightIntensity", light->intensity);
-					shader.second->setVec3("LightDirection", std::dynamic_pointer_cast<DirectionalLight>(light)->direction);
+					shaderP.second->Use();
+					shaderP.second->setVec3("LightColor",light->color);
+					shaderP.second->setFloat("LightIntensity", light->intensity);
+					shaderP.second->setVec3("LightDirection", std::dynamic_pointer_cast<DirectionalLight>(light)->direction);
 				}
+
 			}
-
-
 		}
 	}
 }

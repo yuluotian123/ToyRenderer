@@ -14,18 +14,32 @@ void PBRMaterial::UpdateUniform()//也许 先把数据用glGetUniformLocation(ID, name.
 	getShader()->setBool(pbrUniformNameList::useMetalMap, useMetalmap);
 	getShader()->setBool(pbrUniformNameList::useNormalMap, useNormalmap);
 	getShader()->setBool(pbrUniformNameList::useRoughMap, useRoughmap);
-	getShader()->setBool(pbrUniformNameList::useUnKnownMap, useUnKnownmap);
+	getShader()->setBool(pbrUniformNameList::useMetalRoughMap, useMetalRoughmap);
+	getShader()->setBool(pbrUniformNameList::IBL,IBL);
 
 	for (unsigned int i = 0; i < textureList.size(); i++) {
 		glActiveTexture(GL_TEXTURE0+i);
-		getShader()->setInt(textureList[i].uniformName,i);
+		getShader()->setInt(textureList[i].typeName,i);
 		glBindTexture(GL_TEXTURE_2D, textureList[i].ID);
 	}
 }
 
 void PBRMaterial::RegisterMeshData(const std::vector<Texture>& MeshTexture)
 {
-	textureList = MeshTexture;
+	for (auto& texture : MeshTexture) {
+		if (texture.typeName == pbrUniformNameList::DiffuseMap)
+			textureList.push_back(texture);
+		else if (texture.typeName == pbrUniformNameList::NormalMap)
+			textureList.push_back(texture);
+		else if (texture.typeName == pbrUniformNameList::MetalMap) 
+			textureList.push_back(texture);
+		else if (texture.typeName == pbrUniformNameList::RoughMap)
+			textureList.push_back(texture);
+		else if (texture.typeName == pbrUniformNameList::MetalRoughMap)
+			textureList.push_back(texture);
+		else if (texture.typeName == pbrUniformNameList::EmissiveMap)
+			textureList.push_back(texture);
+	}
 }
 
 void PBRMaterial::ShowMaterialProperties(int id)
@@ -36,7 +50,7 @@ void PBRMaterial::ShowMaterialProperties(int id)
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
 		ImGui::AlignTextToFramePadding();
-		ImGui::TreeNodeEx(textureList[i].uniformName.c_str(), flags);
+		ImGui::TreeNodeEx(textureList[i].typeName.c_str(), flags);
 		ImGui::TableSetColumnIndex(1);
 		ImGui::SetNextItemWidth(-FLT_MIN);
 		ImGui::Text(textureList[i].path.c_str());
@@ -51,8 +65,9 @@ void PBRMaterial::ShowMaterialProperties(int id)
 	TREEBOOL(useMetalmap,-1 * (id + 1))  
 	TREEBOOL(useRoughmap, -2 * (id + 1))
 	TREEBOOL(useNormalmap, -3 * (id + 1))
-	TREEBOOL(useUnKnownmap, -4 * (id + 1))
+	TREEBOOL(useMetalRoughmap, -4 * (id + 1))
+	TREEBOOL(IBL, -5 * (id + 1))
     
-	TREESLIDE(Metallic,Float, -5 * (id + 1),0,1)
-	TREESLIDE(Roughness, Float, -6 * (id + 1), 0, 1)
+	TREESLIDE(Metallic,Float, -6 * (id + 1),0,1)
+	TREESLIDE(Roughness, Float, -7 * (id + 1), 0, 1)
 }

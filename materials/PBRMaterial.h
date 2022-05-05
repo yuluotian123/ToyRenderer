@@ -2,12 +2,21 @@
 #include "OpenGLInterface\Material.h"
 //权宜之计1：把所有要用的string提前定义
 namespace pbrUniformNameList {
+    const std::string IBL = "useIBL";
+
     const std::string Metal = "Metallic";
     const std::string Rough = "Roughness";
     const std::string useMetalMap = "useMetalMap";
     const std::string useRoughMap = "useRoughMap";
     const std::string useNormalMap = "useNormalMap";
-    const std::string useUnKnownMap = "useUnKnownMap";
+    const std::string useMetalRoughMap = "useMetalRoughMap";
+
+    const std::string DiffuseMap = "DiffuseMap0";
+    const std::string MetalRoughMap = "MetalRoughMap0";
+    const std::string NormalMap = "NormalMap0";
+    const std::string MetalMap = "MetalMap0";
+    const std::string RoughMap = "RoughMap0";
+    const std::string EmissiveMap = "EmissiveMap0";
 };
 
 
@@ -28,6 +37,7 @@ private:
     bool useMetalmap = false;
     bool useRoughmap = false;
     bool useNormalmap = false;
-    bool useUnKnownmap = true;//实际上是metalrough map
+    bool useMetalRoughmap = true;//实际上是metalrough map
+    bool IBL = true;
 };
 REGISTER(PBRMaterial)

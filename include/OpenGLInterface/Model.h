@@ -31,11 +31,11 @@ struct Transform {
 class Model
 {
 public:
-    Model(const std::string meshPath, const Transform initTransform)
+    Model(const std::string& meshPath, const Transform initTransform)
         :trans(initTransform){
         loadModel(meshPath);
     }
-    Model(const std::string meshPath) {
+    Model(const std::string& meshPath) {
         loadModel(meshPath);
     }
 
@@ -60,16 +60,18 @@ public:
     const std::string& getDirectory() { return directory; };
 private:
     //获取mesh以及texture，MatProperties数据（matProperties数据暂时没有使用，因为希望后期可以让用户自己设置）
-    void loadModel(std::string meshPath);
+    void loadModel(const std::string& meshPath);
 
     void processNode(aiNode* node, const aiScene* scene);
     std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene);
-    void processMatProperties(const aiMesh* mesh, const aiScene* scene, MaterialProperties& matproperties);
+    void processMatProperties(const aiMesh* mesh,MaterialProperties& matproperties);
     void processVertex(const aiMesh* mesh, std::vector<Vertex>& vertices);
     void processIndices(const aiMesh* mesh, std::vector<unsigned int>& indices);
-    void processTextures(const aiMesh* mesh, const aiScene* scene, std::vector<Texture>& textures);
+    void processTextures(const aiMesh* mesh, std::vector<Texture>& textures);
     void loadTextures(aiMaterial* material, std::vector<Texture>& textures, aiTextureType type, const std::string& typeName);
 private:
+    const aiScene* m_Scene;
+
     std::string directory;
     std::vector<Texture> load_textures;
     std::vector<std::shared_ptr<Mesh>> meshes;

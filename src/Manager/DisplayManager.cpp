@@ -28,7 +28,7 @@ void DisplayManager::Update(float deltaTime)
     if(!scene)
         scene = SceneManager::getOrCreateInstance()->getCurrentScene();
     if(!camera) 
-        camera = SceneManager::getOrCreateInstance()->getCurrentScene()->fecthOrCreateMainCamera();
+        camera = SceneManager::getOrCreateInstance()->getCurrentScene()->getMainCamera();
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();

@@ -10,8 +10,11 @@
 
 bool RenderManager::StartUp()
 {
-	Rendercamera = SceneManager::getOrCreateInstance()->getCurrentScene()->fecthOrCreateMainCamera();
+	Rendercamera = SceneManager::getOrCreateInstance()->getCurrentScene()->getMainCamera();
 	curScene = SceneManager::getOrCreateInstance()->getCurrentScene();
+	context = std::make_shared<RenderContext>();
+
+	if (!context->Init()) return false;
 
 	return true;
 }
@@ -27,9 +30,11 @@ void RenderManager::Render(float DeltaTime)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	context.setupCameraProperties(Rendercamera);
+	context->setupCameraProperties(Rendercamera);
 
-	context.setupLightProperties(curScene->getLights());
+	context->setupLightProperties();
 	
-	context.DrawOpaqueRenderList(curScene->getModels());
+	context->DrawOpaqueRenderList();
+
+	context->DrawSkybox();
 }

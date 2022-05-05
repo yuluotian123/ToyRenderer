@@ -1,4 +1,5 @@
 #pragma once
+#include "OpenGLInterface\RenderTarget.h"
 #include <memory>
 #include <vector>
 #include "Base\common.h"
@@ -6,6 +7,7 @@
 class Camera;
 class Model;
 class Light;
+class Scene;
 namespace CameraUniformNameList {//（为什么c++没有静态类？）
 	const std::string view = "ViewMatrix";
 	const std::string projection = "ProjectionMatrix";
@@ -17,16 +19,29 @@ namespace CameraUniformNameList {//（为什么c++没有静态类？）
 	const std::string Scrheight = "ScreenHeight";
 };
 
+//为什么要从rendermanager那里传入相机数据呢？ 因为以后可能会有一个场景多相机！
 class RenderContext
 {
 public:
-	void DrawOpaqueRenderList(const std::vector<std::shared_ptr<Model>>& models);
-	void DrawOpaqueRenderList(const std::vector<std::shared_ptr<Model>>& models,Shaderid shaderid);
+	bool Init();
+
+	void DrawOpaqueRenderList();
+	void DrawOpaqueRenderList(Shaderid shaderid);
+
+	void InitSkyCubeMapFromHDR();
+	void DrawSkybox();
 
 	void setupCameraProperties(std::shared_ptr<Camera> camera);
 
 	void setupModelMatrix(std::shared_ptr<Model> model);//考虑将此方法移入Model->Draw
 
-	void setupLightProperties(const std::vector<std::shared_ptr<Light>>& lights);
+	void setupLightProperties();
+
+private:
+	std::shared_ptr<Scene> curScene = nullptr;
+
+	Shaderid EquiRecToCubeshader, SkyBoxshader;
+
+	RenderTarget EquiRecToCubeRT;
 
 };
