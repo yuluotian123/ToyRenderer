@@ -5,12 +5,17 @@ uniform sampler2D MetalMap0;
 uniform sampler2D RoughMap0;
 uniform sampler2D MetalRoughMap0;//实际上是metalroughmap
 
+uniform samplerCube irradianceMap;
+uniform samplerCube specularMap;
+uniform sampler2D brdfLUT;
+
 uniform float Metallic;
 uniform float Roughness;
 uniform bool useMetalMap;
 uniform bool useRoughMap;
 uniform bool useNormalMap;
 uniform bool useMetalRoughMap;
+uniform bool useIBL;
 
 uniform vec3 CameraPos;
 uniform float ScreenWidth;
@@ -77,6 +82,11 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+{
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}   
+
 vec3 DirectPBR(vec3 N,vec3 V,vec3 albedo,float rough,float metal){
          vec3 color = vec3(0.0f);
 
@@ -108,6 +118,30 @@ vec3 DirectPBR(vec3 N,vec3 V,vec3 albedo,float rough,float metal){
           return color;
 }
 
+vec3 IBL(vec3 N,vec3 V,vec3 R,vec3 albedo,float rough,float metal){
+     vec3 irradiance = texture(irradianceMap, N).rgb;
+
+     vec3 F0 = vec3(0.04f); 
+     F0 = mix(F0, albedo, metal);
+
+     vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, rough);
+
+     vec3 kS = F;
+     vec3 kD = 1.0 - kS;
+     kD *= 1.0 - metal;	
+
+     vec3 diffuse  = irradiance * albedo;
+
+    const float MAX_REFLECTION_LOD = 4.0;
+    vec3 prefilteredColor = textureLod(specularMap, R,  rough * MAX_REFLECTION_LOD).rgb;    
+   vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), rough)).rg;
+    vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
+
+    vec3 ambient = kD * diffuse + specular;
+
+    return ambient;
+}
+
 void main()
 {
      vec2 tex = f_in.TexCoord;
@@ -115,6 +149,7 @@ void main()
 
      vec3 N = normalize(f_in.Normal);
      vec3 V = normalize(CameraPos - f_in.WorldPos);
+     vec3 R = reflect(-V, N); 
 
 	 float rough = Roughness;
 	 float metal = Metallic;
@@ -133,7 +168,8 @@ void main()
      }
 
      vec3 color =  DirectPBR(N,V,albedo,rough,metal);
-      
+     if(useIBL)
+     color += IBL(N,V,R,albedo,rough,metal);
       // HDR tonemapping
       color = color / (color + vec3(1.0));
       // gamma correct

@@ -48,8 +48,8 @@ void RenderContext::InitSkyCubeMapFromHDR()
 	EquiRecToCubeRT.createRenderTarget(skybox->getResolution(), skybox->getResolution(), RenderTarget::ENUM_TYPE_CAPTURE);
 
 	EquiRecToCubeshader = MaterialSystem::getOrCreateInstance()->registerShader("EquiRectangularToCubeVs.glsl", "EquiRectangularToCubeFs.glsl");
-	irradianceShader = MaterialSystem::getOrCreateInstance()->registerShader("EquiRectangularToCubeVs.glsl","irradiancFs.glsl");
-	specFilterShader = MaterialSystem::getOrCreateInstance()->registerShader("EquiRectangularToCubeVs.glsl", "irradiancFs.glsl");
+	irradianceShader = MaterialSystem::getOrCreateInstance()->registerShader("EquiRectangularToCubeVs.glsl","irradianceFs.glsl");
+	specFilterShader = MaterialSystem::getOrCreateInstance()->registerShader("EquiRectangularToCubeVs.glsl", "preFilterFs.glsl");
 
 	EquiRecToCubeRT.use();
 	skybox->fillCubeMapWithHDR(EquiRecToCubeshader);
@@ -65,19 +65,23 @@ void RenderContext::InitSkyCubeMapFromHDR()
 	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
 	{
 		//绑定这三张图片在最末尾的3个位置（直接每帧更新是不是不太好）
+		//全局的tex应该怎么绑定比较好呢？
 		if (shaderP.second->useIBL) {
 			shaderP.second->Use();
-			glActiveTexture(GL_TEXTURE31);
-			shaderP.second->setInt("irradianceMap",31);
-			glBindTexture(GL_TEXTURE_CUBE_MAP,irradianceMap.ID);
-
-			glActiveTexture(GL_TEXTURE30);
-			shaderP.second->setInt("specularMap", 30);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, specFilteredMap.ID);
-
-
+			shaderP.second->setInt("irradianceMap", 9);
+			shaderP.second->setInt("specularMap", 8);
+			shaderP.second->setInt("brdfLUT", 7);
 		}
 	}
+
+	glActiveTexture(GL_TEXTURE0 + 9);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap.ID);
+
+	glActiveTexture(GL_TEXTURE0 + 8);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, specFilteredMap.ID);
+
+	glActiveTexture(GL_TEXTURE0 + 7);
+	glBindTexture(GL_TEXTURE_2D, brdfLUT.ID);
 }
 
 void RenderContext::DrawSkybox()

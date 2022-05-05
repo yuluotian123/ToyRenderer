@@ -75,7 +75,7 @@ void Texture::loadbrdfTexture(const std::string& filePath)
     GLvoid* data = stbi_load(filePath.c_str(), &width, &height, &nComponents, 0);
 
     glBindTexture(GL_TEXTURE_2D, ID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RGB, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, width, height, 0, GL_RGB, GL_FLOAT, data);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -526,6 +526,8 @@ void CubeMap::preFilterCubeMap(const unsigned int environmentMap, const unsigned
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
         glViewport(0, 0, mipWidth, mipHeight);
 
+        float roughness = (float)mip / (float)(maxMipLevels - 1);
+        shader->setFloat("roughness", roughness);
         for (unsigned int i = 0; i < numSidesInCube; ++i) {
             shader->setMat4("captureView", captureViews[i]);
 
