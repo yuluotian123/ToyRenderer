@@ -20,7 +20,7 @@ void Skybox::setup(const std::string& path, bool isHDR, unsigned int res)
 
     if (isHDR) {
         equirectangularMap.loadHDRTexture(path);
-        skyCube.generateCubeMap(res, res, CubeMapType::HDR_MAP);
+        skyCube.createCubeMap(res, res, CUBEMAPTYPE::HDR_MAP);
     }
     else {
         skyCube.loadCubeMap(path);//需要json传入folder路径

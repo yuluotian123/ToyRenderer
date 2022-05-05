@@ -4,7 +4,7 @@ constexpr  int SCREEN_WIDTH = 1980;
 constexpr int SCREEN_HEIGHT = 1080;
 constexpr float SCREEN_ASPECT_RATIO = SCREEN_WIDTH / (float)SCREEN_HEIGHT;
 
-//把这两未来扩展成两个类
+//TO DO:把这两个拓展成两个类
 typedef int Shaderid;
 typedef std::string Materialid;
 

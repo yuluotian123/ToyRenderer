@@ -21,8 +21,6 @@ bool RenderContext::Init()
 
 void RenderContext::DrawOpaqueRenderList()
 {
-	curScene = SceneManager::getOrCreateInstance()->getCurrentScene();
-
 	for (auto& model : curScene->getModels()) {
 		setupModelMatrix(model);
 		model->Draw();
@@ -31,8 +29,6 @@ void RenderContext::DrawOpaqueRenderList()
 
 void RenderContext::DrawOpaqueRenderList(Shaderid shaderid)
 {
-	curScene = SceneManager::getOrCreateInstance()->getCurrentScene();
-
 	for (auto& model : curScene->getModels()) {
 		setupModelMatrix(model);
 		model->Draw(shaderid);
@@ -41,19 +37,51 @@ void RenderContext::DrawOpaqueRenderList(Shaderid shaderid)
 
 void RenderContext::InitSkyCubeMapFromHDR()
 {
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);//让立方体贴图边缘平滑
+
 	std::shared_ptr<Skybox> skybox = curScene->getSkybox();
 
+	irradianceMap.createCubeMap(32, 32, CUBEMAPTYPE::HDR_MAP);
+	specFilteredMap.createCubeMap(256, 256, CUBEMAPTYPE::PREFILTER_MAP);
+	brdfLUT.loadbrdfTexture("G:/gitHubGameProject/ToyRenderer/resource/Skybox/ibl_brdf_lut.png");
+
+	EquiRecToCubeRT.createRenderTarget(skybox->getResolution(), skybox->getResolution(), RenderTarget::ENUM_TYPE_CAPTURE);
+
 	EquiRecToCubeshader = MaterialSystem::getOrCreateInstance()->registerShader("EquiRectangularToCubeVs.glsl", "EquiRectangularToCubeFs.glsl");
-	EquiRecToCubeRT.createRenderTarget(skybox->getResolution(), skybox->getResolution(), RenderTarget::ENUM_TYPE_BASIC);
+	irradianceShader = MaterialSystem::getOrCreateInstance()->registerShader("EquiRectangularToCubeVs.glsl","irradiancFs.glsl");
+	specFilterShader = MaterialSystem::getOrCreateInstance()->registerShader("EquiRectangularToCubeVs.glsl", "irradiancFs.glsl");
+
 	EquiRecToCubeRT.use();
 	skybox->fillCubeMapWithHDR(EquiRecToCubeshader);
+
+	EquiRecToCubeRT.resizeforCapture(irradianceMap.width, irradianceMap.height);
+	irradianceMap.convolveCubeMap(skybox->getTextureID(), irradianceShader);
+
+	EquiRecToCubeRT.resizeforCapture(specFilteredMap.width, specFilteredMap.height);
+	specFilteredMap.preFilterCubeMap(skybox->getTextureID(), EquiRecToCubeRT.GetRBO(), specFilterShader);
+
 	EquiRecToCubeRT.UseDefault();
 
+	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
+	{
+		//绑定这三张图片在最末尾的3个位置（直接每帧更新是不是不太好）
+		if (shaderP.second->useIBL) {
+			shaderP.second->Use();
+			glActiveTexture(GL_TEXTURE31);
+			shaderP.second->setInt("irradianceMap",31);
+			glBindTexture(GL_TEXTURE_CUBE_MAP,irradianceMap.ID);
+
+			glActiveTexture(GL_TEXTURE30);
+			shaderP.second->setInt("specularMap", 30);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, specFilteredMap.ID);
+
+
+		}
+	}
 }
 
 void RenderContext::DrawSkybox()
 {
-	curScene = SceneManager::getOrCreateInstance()->getCurrentScene();
 	std::shared_ptr<Skybox> skybox = curScene->getSkybox();
 	std::shared_ptr<Shader> shader = MaterialSystem::getOrCreateInstance()->getRegisterShaderByID(SkyBoxshader);
 
@@ -64,7 +92,7 @@ void RenderContext::DrawSkybox()
 
 void RenderContext::setupCameraProperties(std::shared_ptr<Camera> camera)
 {
-	for (auto shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
+	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
 	{
 		if (shaderP.second->useCamera) {
 			shaderP.second->Use();
@@ -81,7 +109,7 @@ void RenderContext::setupCameraProperties(std::shared_ptr<Camera> camera)
 
 void RenderContext::setupModelMatrix(std::shared_ptr<Model> model)
 {
-	for (auto shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
+	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
 	{
 		if (shaderP.second->useCamera) {
 			shaderP.second->Use();
@@ -92,9 +120,7 @@ void RenderContext::setupModelMatrix(std::shared_ptr<Model> model)
 
 void RenderContext::setupLightProperties()
 {
-	curScene = SceneManager::getOrCreateInstance()->getCurrentScene();
-
-	for (auto shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
+	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
 	{
 		if (shaderP.second->useLight) {
 			for (auto& light : curScene->getLights()) {

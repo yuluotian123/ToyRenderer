@@ -28,20 +28,25 @@ public:
 	void DrawOpaqueRenderList();
 	void DrawOpaqueRenderList(Shaderid shaderid);
 
-	void InitSkyCubeMapFromHDR();
 	void DrawSkybox();
 
 	void setupCameraProperties(std::shared_ptr<Camera> camera);
 
-	void setupModelMatrix(std::shared_ptr<Model> model);//考虑将此方法移入Model->Draw
-
 	void setupLightProperties();
+
+private:
+	void setupModelMatrix(std::shared_ptr<Model> model);//考虑将此方法移入Model->Draw
+	void InitSkyCubeMapFromHDR();
 
 private:
 	std::shared_ptr<Scene> curScene = nullptr;
 
-	Shaderid EquiRecToCubeshader, SkyBoxshader;
+	Shaderid EquiRecToCubeshader, irradianceShader,specFilterShader, SkyBoxshader;
 
-	RenderTarget EquiRecToCubeRT;
+	RenderTarget EquiRecToCubeRT,irradianceRT,specFilterRT;
+
+	CubeMap irradianceMap, specFilteredMap;
+
+	Texture brdfLUT;
 
 };

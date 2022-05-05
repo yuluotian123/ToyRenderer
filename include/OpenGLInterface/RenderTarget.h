@@ -1,6 +1,5 @@
 #pragma once
 #include <glad\glad.h>
-#include <GLFW\glfw3.h>
 #include "OpenGLInterface\Texture.h"
 #include "glm\glm.hpp"
 #include <vector>
@@ -11,6 +10,7 @@ public:
 	enum ENUM_TYPE 
 	{
 		ENUM_TYPE_INVALID,
+		ENUM_TYPE_CAPTURE,
 		ENUM_TYPE_BASIC,
 		ENUM_TYPE_RGBF1_DEPTH,
 		ENUM_TYPE_RGBF2_DEPTH,
@@ -32,29 +32,31 @@ public:
 
 	void clear(GLbitfield clearTarget, glm::vec3 color, bool inuse = false);
 
-	//void resize(unsigned int width, unsigned int height);
+	void resizeforCapture(unsigned int width, unsigned int height);
 
 	const Texture& getcolorTexture(unsigned int id) const;
 	const Texture& getdepthTexture() const;
 	unsigned int GetID() const;
+	unsigned int GetRBO() const;
 	bool IsValid() const { return isValid; };
 
 	static void UseDefault();
 private:
 	bool isComplete();
 
+	bool GenCapture(unsigned width, unsigned height);
 	bool GenBasic(unsigned width, unsigned height);
 	bool GenRGBF_Depth(unsigned width, unsigned height, unsigned colorBufferNum = 1);
 	bool GenColor(unsigned width, unsigned height, bool isFloat = false);
 	bool GenRed(unsigned width, unsigned height);
 	bool GenDepth(unsigned width, unsigned height);
 	bool GenCubeDepth(unsigned width, unsigned height);
-
 private:
 	ENUM_TYPE type;
 	unsigned int width,height;
 	bool isValid = false;
 	unsigned int ID;
+	unsigned int RBOid;//只在GenCapture中使用
 
 	std::vector<Texture> colorTextures;
 	Texture depthTexture;

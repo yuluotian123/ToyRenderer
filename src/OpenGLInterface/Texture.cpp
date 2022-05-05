@@ -65,6 +65,25 @@ void Texture::loadTexture(const std::string& filePath, bool sRGB)
     }
 }
 
+void Texture::loadbrdfTexture(const std::string& filePath)
+{
+    path = filePath;
+
+    stbi_set_flip_vertically_on_load(true);
+
+    glGenTextures(1, &ID);
+    GLvoid* data = stbi_load(filePath.c_str(), &width, &height, &nComponents, 0);
+
+    glBindTexture(GL_TEXTURE_2D, ID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RGB, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_image_free(data);
+}
+
 void Texture::loadHDRTexture(const std::string& filePath)
 {
     stbi_set_flip_vertically_on_load(true);
@@ -206,6 +225,103 @@ unsigned int Texture::loadDDSTexture(const char* filePath)
     return TextureName;
 }
 
+void Texture::generateTexture(const int width, const int height,const int attachnum, TEXTURETYPE type)
+{
+    glGenTextures(1, &ID);
+    this->width = width;
+    this->height = height;
+    GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+    switch (type)
+    {
+    case MULT_2D_HDR_COL:
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, ID);
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA16F, width, height, GL_TRUE);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachnum, GL_TEXTURE_2D_MULTISAMPLE,ID, 0);
+        typeName = "ColorBuffer";
+        break;
+    case SING_2D_HDR_COL:
+        glBindTexture(GL_TEXTURE_2D, ID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachnum, GL_TEXTURE_2D, ID, 0);
+        typeName = "ColorBuffer";
+        break;
+    case SING_2D_COL:
+        glBindTexture(GL_TEXTURE_2D, ID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0);
+        typeName = "ColorBuffer";
+        break;
+    case SING_2D_RED:
+        glBindTexture(GL_TEXTURE_2D, ID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0);
+        typeName = "ColorBuffer";
+        break;
+    case MULT_2D_HDR_DEP:
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, ID);
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_DEPTH_COMPONENT32F, width, height, GL_TRUE);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, ID, 0);
+        typeName = "DepthBuffer";
+        break;
+    case SING_2D_HDR_DEP:
+        glBindTexture(GL_TEXTURE_2D, ID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, ID, 0);
+        typeName = "DepthBuffer";
+        break;
+    case SING_2D_HDR_COL_CLAMP:
+        glBindTexture(GL_TEXTURE_2D,ID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachnum, GL_TEXTURE_2D, ID, 0);
+        typeName = "ColorBuffer";
+        break;
+    case SING_2D_COL_CLAMP:
+        glBindTexture(GL_TEXTURE_2D, ID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachnum, GL_TEXTURE_2D, ID, 0);
+        typeName = "ColorBuffer";
+        break;
+    case SING_2D_HDR_DEP_BORDER:
+        glBindTexture(GL_TEXTURE_2D, ID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, ID, 0);
+        typeName = "DepthBuffer";
+        break;
+    default:
+        break;
+    }
+}
+
 std::string Texture::getFileExtension(const std::string& filePath)
 {
     size_t indexLocation = filePath.rfind('.', filePath.length());
@@ -274,13 +390,13 @@ void CubeMap::loadCubeMap(const std::string& folderPath)
     stbi_set_flip_vertically_on_load(true);
 }
 
-void CubeMap::generateCubeMap(const int width, const int height, CubeMapType cubeType)
+void CubeMap::createCubeMap(const int width, const int height, CUBEMAPTYPE cubeType)
 {
     glGenTextures(1, &ID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 
     switch (cubeType) {
-    case  CubeMapType::SHADOW_MAP:
+    case  CUBEMAPTYPE::SHADOW_MAP:
         for (unsigned int i = 0; i < numSidesInCube; ++i) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                 0, GL_DEPTH_COMPONENT, width, height, 0,
@@ -296,7 +412,7 @@ void CubeMap::generateCubeMap(const int width, const int height, CubeMapType cub
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         break;
 
-    case  CubeMapType::HDR_MAP:
+    case  CUBEMAPTYPE::HDR_MAP:
         for (unsigned int i = 0; i < numSidesInCube; ++i) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                 0, GL_RGB32F,
@@ -309,8 +425,24 @@ void CubeMap::generateCubeMap(const int width, const int height, CubeMapType cub
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
         break;
-    }
 
+    case  CUBEMAPTYPE::PREFILTER_MAP:
+        for (unsigned int i = 0; i < numSidesInCube; ++i) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0, GL_RGB16F,
+                width, height, 0,
+                GL_RGB, GL_FLOAT, NULL);
+        }
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+        maxMipLevels = 5;
+
+    }
     this->width = width;
     this->height = height;
     path = ""; //Generated so no file path
@@ -324,6 +456,7 @@ void CubeMap::equiRectangularToCubeMap(const unsigned int equirectangularMap, Sh
     trshader->Use();
     trshader->useCamera = false;
     trshader->useLight = false;
+    trshader->useIBL = false;
 
     trshader->setInt("equirectangularMap", 0);
     trshader->setMat4("captureProjection", captureProjection);
@@ -341,4 +474,68 @@ void CubeMap::equiRectangularToCubeMap(const unsigned int equirectangularMap, Sh
     }
 
 
+}
+
+void CubeMap::convolveCubeMap(const unsigned int environmentMap, Shaderid convolveShaderid)
+{
+    std::shared_ptr<Shader> shader = MaterialSystem::getOrCreateInstance()->getRegisterShaderByID(convolveShaderid);
+    shader->Use();
+    shader->useCamera = false;
+    shader->useLight = false;
+    shader->useIBL = false;
+
+    shader->setInt("environmentMap", 0);
+    shader->setMat4("captureProjection", captureProjection);
+
+    glViewport(0, 0, width, height);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap);
+
+    for (unsigned int i = 0; i < numSidesInCube; i++) {
+        shader->setMat4("captureView", captureViews[i]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, ID, 0);
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        cubeMapCube.draw();
+    }
+}
+
+void CubeMap::preFilterCubeMap(const unsigned int environmentMap, const unsigned int captureRBO, Shaderid filterShaderid)
+{
+    std::shared_ptr<Shader> shader = MaterialSystem::getOrCreateInstance()->getRegisterShaderByID(filterShaderid);
+
+    shader->Use();
+    shader->useCamera = false;
+    shader->useLight = false;
+    shader->useIBL = false;
+
+    shader->setInt("environmentMap", 0);
+    shader->setMat4("captureProjection", captureProjection);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap);
+
+    for (unsigned int mip = 0; mip < maxMipLevels; ++mip) {
+    
+        unsigned int mipWidth = unsigned int(width * std::pow(0.5f, mip));
+        unsigned int mipHeight = unsigned int(height * std::pow(0.5f, mip));
+
+        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+        glViewport(0, 0, mipWidth, mipHeight);
+
+        for (unsigned int i = 0; i < numSidesInCube; ++i) {
+            shader->setMat4("captureView", captureViews[i]);
+
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                ID, mip);
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            cubeMapCube.draw();
+        }
+    
+    }
 }

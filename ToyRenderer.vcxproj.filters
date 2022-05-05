@@ -143,5 +143,6 @@
     <None Include="resource\Shaders\EquiRectangularToCubeVs.glsl" />
     <None Include="resource\Shaders\skyBoxVs.glsl" />
     <None Include="resource\Shaders\skyBoxFs.glsl" />
+    <None Include="resource\Shaders\irradiancFs.glsl" />
   </ItemGroup>
 </Project>

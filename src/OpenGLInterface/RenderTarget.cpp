@@ -12,6 +12,10 @@ bool RenderTarget::createRenderTarget(unsigned _width, unsigned _height, ENUM_TY
         printf("Invalid.\n");
         isValid = false;
         break;
+    case RenderTarget::ENUM_TYPE_CAPTURE:
+        if (!GenCapture(width, height))
+            printf("fail to GenCapture.\n");
+        break;
     case RenderTarget::ENUM_TYPE_BASIC:
         if (!GenBasic(width,height))
             printf("fail to GenBasic.\n");
@@ -71,8 +75,7 @@ void RenderTarget::use() const
         printf("fail to use this rendertarget.\n"); 
         return;
     }
-
-    glViewport(0, 0, width, height);
+    glViewport(0,0,width, height);
     glBindFramebuffer(GL_FRAMEBUFFER, ID);
 }
 
@@ -94,15 +97,21 @@ void RenderTarget::clear(GLbitfield clearTarget, glm::vec3 color,bool inuse)
     glBindFramebuffer(GL_READ_FRAMEBUFFER, ID);
     glClearColor(color[0], color[1], color[2], 1.0f);
     glClear(clearTarget);
-    if(!inuse)
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    if (!inuse)
+        UseDefault();
 }
 
-//等用到的时候再考虑
-//void RenderTarget::resize(unsigned int width, unsigned int height)
-//{
-//
-//}
+void RenderTarget::resizeforCapture(unsigned int width, unsigned int height)
+{
+    if (!isValid) return;
+    if (type != ENUM_TYPE_CAPTURE) return;
+
+    this->width = width;
+    this->height = height;
+
+    glBindRenderbuffer(GL_RENDERBUFFER, RBOid);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+}
 
 const Texture& RenderTarget::getcolorTexture(unsigned int id) const
 {
@@ -144,6 +153,16 @@ unsigned int RenderTarget::GetID() const
     return ID;
 }
 
+unsigned int RenderTarget::GetRBO() const
+{
+    if (!isValid)
+        return 0;
+    if (type != ENUM_TYPE_CAPTURE)
+        return 0;
+
+    return RBOid;
+}
+
 void RenderTarget::UseDefault()
 {
     glViewport(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -162,18 +181,36 @@ bool RenderTarget::isComplete()
     return true;
 }
 
+bool RenderTarget::GenCapture(unsigned width, unsigned height)
+{
+    glGenFramebuffers(1, &ID);
+    glBindFramebuffer(GL_FRAMEBUFFER, ID);
+
+    unsigned int RBO;
+    glGenRenderbuffers(1, &RBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBO);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    isValid = isComplete();
+    if (!isValid) {
+        printf("Framebuffer is not complete!\n");
+        return false;
+    }
+
+    RBOid = RBO;
+    return true;
+}
+
 bool RenderTarget::GenBasic(unsigned width, unsigned height)
 {
     glGenFramebuffers(1, &ID);
     glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-    unsigned int colorBufferID;
-    glGenTextures(1, &colorBufferID);
-    glBindTexture(GL_TEXTURE_2D, colorBufferID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBufferID, 0);
+    Texture colortexture;
+    colortexture.generateTexture(width, height, 0, TEXTURETYPE::SING_2D_COL);
 
     unsigned int RBO;
     glGenRenderbuffers(1, &RBO);
@@ -189,13 +226,7 @@ bool RenderTarget::GenBasic(unsigned width, unsigned height)
         return false;
     }
 
-    Texture texture;
-    texture.ID = colorBufferID;
-    texture.width = width;
-    texture.height = height;
-    texture.typeName = "ColorBuffer";
-
-    colorTextures.push_back(texture);
+    colorTextures.push_back(colortexture);
     return true;
 }
 
@@ -205,21 +236,8 @@ bool RenderTarget::GenRGBF_Depth(unsigned width, unsigned height, unsigned color
     glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
     for (unsigned i = 0; i < colorBufferNum; i++) {
-        unsigned colorBufferID;
-        glGenTextures(1, &colorBufferID);
-        glBindTexture(GL_TEXTURE_2D, colorBufferID);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);    
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBufferID, 0);
-
         Texture texture;
-        texture.ID = colorBufferID;
-        texture.width = width;
-        texture.height = height;
-        texture.typeName = "ColorBuffer";
+        texture.generateTexture(width,height,i,TEXTURETYPE::SING_2D_HDR_COL_CLAMP);
 
         colorTextures.push_back(texture);
     }
@@ -255,15 +273,9 @@ bool RenderTarget::GenColor(unsigned width, unsigned height, bool isFloat)
     glGenFramebuffers(1, &ID);
     glBindFramebuffer(GL_FRAMEBUFFER, ID);
     // create a color attachment texture
-    unsigned colorBufferID;
-    glGenTextures(1, &colorBufferID);
-    glBindTexture(GL_TEXTURE_2D, colorBufferID);
-    glTexImage2D(GL_TEXTURE_2D, 0, isFloat ? GL_RGB16F : GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBufferID, 0);	// we only need a color buffer
+    Texture texture;
+    if (isFloat) texture.generateTexture(width, height, 0, TEXTURETYPE::SING_2D_HDR_COL_CLAMP);
+    else texture.generateTexture(width, height, 0, TEXTURETYPE::SING_2D_COL_CLAMP);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -272,12 +284,6 @@ bool RenderTarget::GenColor(unsigned width, unsigned height, bool isFloat)
         printf("Framebuffer is not complete!\n");
         return false;
     }
-
-    Texture texture;
-    texture.ID = colorBufferID;
-    texture.width = width;
-    texture.height = height;
-    texture.typeName = "ColorBuffer";
 
     colorTextures.push_back(texture);
     return true;
@@ -288,13 +294,8 @@ bool RenderTarget::GenRed(unsigned width, unsigned height)
     glGenFramebuffers(1, &ID);
     glBindFramebuffer(GL_FRAMEBUFFER, ID);
     // create a color attachment texture
-    unsigned colorBufferID;
-    glGenTextures(1, &colorBufferID);
-    glBindTexture(GL_TEXTURE_2D, colorBufferID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RGB, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBufferID, 0);	// we only need a color buffer
+    Texture texture;
+    texture.generateTexture(width,height,0,TEXTURETYPE::SING_2D_RED);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -303,11 +304,6 @@ bool RenderTarget::GenRed(unsigned width, unsigned height)
         printf("Framebuffer is not complete!\n");
         return false;
     }
-    Texture texture;
-    texture.ID = colorBufferID;
-    texture.width = width;
-    texture.height = height;
-    texture.typeName = "ColorBuffer";
 
     colorTextures.push_back(texture);
     return true;
@@ -316,20 +312,9 @@ bool RenderTarget::GenRed(unsigned width, unsigned height)
 bool RenderTarget::GenDepth(unsigned width, unsigned height)
 {
     glGenFramebuffers(1, &ID);
-    // create depth texture
-    unsigned depthBufferID;
-    glGenTextures(1, &depthBufferID);
-    glBindTexture(GL_TEXTURE_2D, depthBufferID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-    // attach depth texture as FBO's depth buffer
     glBindFramebuffer(GL_FRAMEBUFFER, ID);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBufferID, 0);
+    // create depth texture
+    depthTexture.generateTexture(width, height, 0, TEXTURETYPE::SING_2D_HDR_DEP_BORDER);
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
 
@@ -340,11 +325,6 @@ bool RenderTarget::GenDepth(unsigned width, unsigned height)
         printf("Framebuffer is not complete!\n");
         return false;
     }
-
-    depthTexture.ID = depthBufferID;
-    depthTexture.width = width;
-    depthTexture.height = height;
-    depthTexture.typeName = "DepthBuffer";
 
     return true;
 }
@@ -353,11 +333,11 @@ bool RenderTarget::GenCubeDepth(unsigned width, unsigned height)
 {
     glGenFramebuffers(1, &ID);
     
-    depthCubeTexture.generateCubeMap(width, height, CubeMapType::SHADOW_MAP);
+    depthCubeTexture.createCubeMap(width, height, CUBEMAPTYPE::SHADOW_MAP);
 
     glBindFramebuffer(GL_FRAMEBUFFER, ID);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubeTexture.ID, 0);
-    glDrawBuffer(GL_NONE);
+    glDrawBuffer(GL_NONE);  
     glReadBuffer(GL_NONE);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -370,3 +350,4 @@ bool RenderTarget::GenCubeDepth(unsigned width, unsigned height)
 
     return true;
 }
+

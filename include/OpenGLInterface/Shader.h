@@ -26,5 +26,6 @@ public:
 
     bool useCamera = true;
     bool useLight = true; 
+    bool useIBL = true;
 };
 
