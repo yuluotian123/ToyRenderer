@@ -29,7 +29,7 @@
   "skybox": [
     {
       "Hdr": true,
-      "Resolution":2048,
+      "Resolution": 2048,
       "Path": "G:/gitHubGameProject/ToyRenderer/resource/Skybox/tokyo/tokyo.hdr"
     }
   ],
@@ -40,14 +40,6 @@
       "Position": [ 0.0, 0.0, -8.0 ],
       "Rotation": [ 0.0, 1.0, 1.0, 1.0 ],
       "Scaling": [ 0.3, 0.3, 0.3 ]
-    },
-    {
-
-      "Material": "FirstPBR",
-      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/WaterBottle/WaterBottle.gltf",
-      "Position": [ 0.0, 2.0, -2.0 ],
-      "Rotation": [ 0.0, 1.0, 1.0, 1.0 ],
-      "Scaling": [ 5.0, 5.0, 5.0 ]
     }
   ]
 }

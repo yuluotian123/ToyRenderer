@@ -13,7 +13,6 @@ public:
 
     void Use();
 
-    //使用material中的同名函数可能会比较好？
     void setBool(const std::string& name, bool value) const;
     void setInt(const std::string& name, int value) const;
     void setFloat(const std::string& name, float value) const;
@@ -24,6 +23,7 @@ public:
     unsigned int ID = 0;
     std::string VPath, FPath, GPath;
 
+    //TO DO：把他们放到Shaderid里
     bool useCamera = true;
     bool useLight = true; 
     bool useIBL = true;

@@ -148,7 +148,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\Base\Common.h" />
-    <ClInclude Include="include\Base\Gameobject.h" />
     <ClInclude Include="include\Base\Singleton.hpp" />
     <ClInclude Include="include\OpenGLInterface\Camera.h" />
     <ClInclude Include="include\Manager\DisplayManager.h" />
@@ -173,6 +172,7 @@
     <ClInclude Include="include\OpenGLInterface\Primitive.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Base\Common.cpp" />
     <ClCompile Include="src\OpenGLInterface\Primitive.cpp" />
     <ClCompile Include="src\Manager\Skybox.cpp" />
     <ClCompile Include="src\Manager\LightSystem.cpp" />

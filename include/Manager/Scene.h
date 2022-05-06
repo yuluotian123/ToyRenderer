@@ -1,12 +1,11 @@
 #pragma once
+#include "Base\Common.h"
 #include <nlohmann\json.hpp>
 #include <vector>
 #include <string>
 #include <memory>
 
 using json = nlohmann::json;
-typedef int Shaderid;
-typedef std::string Materialid;
 
 class Light;
 class Model;

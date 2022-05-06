@@ -3,7 +3,7 @@
 #include "PBRMaterial.h"
 #include "OpenGLInterface\Shader.h"
 
-void PBRMaterial::UpdateUniform()//也许 先把数据用glGetUniformLocation(ID, name.c_str())注册好比较好
+void PBRMaterial::UpdateUniform()//可以不逐实例？但是每个material实例的设置也可能不同
 {
 	getShader()->Use();
 	

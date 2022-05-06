@@ -9,7 +9,6 @@ class RegisterAction
 {
 public:
 	RegisterAction(const std::string& class_name, FUNC&& generator);
-
 };
 
 #define REGISTER(CLASS_NAME) \

@@ -37,7 +37,7 @@ private:
     bool useMetalmap = false;
     bool useRoughmap = false;
     bool useNormalmap = false;
-    bool useMetalRoughmap = true;//实际上是metalrough map
+    bool useMetalRoughmap = true;//实际上是unknown map
     bool IBL = true;
 };
 REGISTER(PBRMaterial)

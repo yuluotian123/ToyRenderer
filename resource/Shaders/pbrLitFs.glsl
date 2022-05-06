@@ -3,7 +3,7 @@ uniform sampler2D DiffuseMap0;
 uniform sampler2D NormalMap0;
 uniform sampler2D MetalMap0;
 uniform sampler2D RoughMap0;
-uniform sampler2D MetalRoughMap0;//实际上是metalroughmap
+uniform sampler2D MetalRoughMap0;//实际上是unknownmap
 
 uniform samplerCube irradianceMap;
 uniform samplerCube specularMap;
@@ -134,7 +134,7 @@ vec3 IBL(vec3 N,vec3 V,vec3 R,vec3 albedo,float rough,float metal){
 
     const float MAX_REFLECTION_LOD = 4.0;
     vec3 prefilteredColor = textureLod(specularMap, R,  rough * MAX_REFLECTION_LOD).rgb;    
-   vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), rough)).rg;
+    vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), rough)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
     vec3 ambient = kD * diffuse + specular;

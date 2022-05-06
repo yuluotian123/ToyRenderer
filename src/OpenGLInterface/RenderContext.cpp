@@ -43,7 +43,8 @@ void RenderContext::InitSkyCubeMapFromHDR()
 
 	irradianceMap.createCubeMap(32, 32, CUBEMAPTYPE::HDR_MAP);
 	specFilteredMap.createCubeMap(256, 256, CUBEMAPTYPE::PREFILTER_MAP);
-	brdfLUT.loadbrdfTexture("G:/gitHubGameProject/ToyRenderer/resource/Skybox/ibl_brdf_lut.png");
+
+	brdfLUT.loadHDRTexture("G:/gitHubGameProject/ToyRenderer/resource/Skybox/ibl_brdf_lut.png");
 
 	EquiRecToCubeRT.createRenderTarget(skybox->getResolution(), skybox->getResolution(), RenderTarget::ENUM_TYPE_CAPTURE);
 
@@ -64,23 +65,23 @@ void RenderContext::InitSkyCubeMapFromHDR()
 
 	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
 	{
-		//绑定这三张图片在最末尾的3个位置（直接每帧更新是不是不太好）
+		//绑定这三张图片在指定的3个位置（直接每帧更新是不是不太好）
 		//全局的tex应该怎么绑定比较好呢？
 		if (shaderP.second->useIBL) {
 			shaderP.second->Use();
-			shaderP.second->setInt("irradianceMap", 9);
-			shaderP.second->setInt("specularMap", 8);
-			shaderP.second->setInt("brdfLUT", 7);
+			shaderP.second->setInt("irradianceMap", 10);
+			shaderP.second->setInt("specularMap", 11);
+			shaderP.second->setInt("brdfLUT", 12);
 		}
 	}
 
-	glActiveTexture(GL_TEXTURE0 + 9);
+	glActiveTexture(GL_TEXTURE0 + 10);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap.ID);
 
-	glActiveTexture(GL_TEXTURE0 + 8);
+	glActiveTexture(GL_TEXTURE0 + 11);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, specFilteredMap.ID);
 
-	glActiveTexture(GL_TEXTURE0 + 7);
+	glActiveTexture(GL_TEXTURE0 + 12);
 	glBindTexture(GL_TEXTURE_2D, brdfLUT.ID);
 }
 
