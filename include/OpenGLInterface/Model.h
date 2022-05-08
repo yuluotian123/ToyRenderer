@@ -32,7 +32,7 @@ class Model
 {
 public:
     Model(const std::string& meshPath, const Transform initTransform)
-        :trans(initTransform){
+        :trans(initTransform) {
         loadModel(meshPath);
     }
     Model(const std::string& meshPath) {
@@ -40,12 +40,12 @@ public:
     }
 
     void Draw() const;//模型的渲染，调用mesh的draw方法
-    void Draw(Shaderid shaderid) const;//用shader来进行模型渲染
+    void DefaultDraw() const;//用shader来进行模型渲染(不再调用material)
     void Update(float DeltaTime); //处理模型的移动等动画
 
     void SetMaterials(const Materialid& Materialid);//一次性设置Model中所有mesh的material
 
-    std::vector<std::shared_ptr<Mesh>>& getMeshes(){return meshes; };
+    std::vector<std::shared_ptr<Mesh>>& getMeshes() { return meshes; };
     std::shared_ptr<Mesh> getMeshbyIndex(int Index);
 
     //给UI用
@@ -64,7 +64,7 @@ private:
 
     void processNode(aiNode* node, const aiScene* scene);
     std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene);
-    void processMatProperties(const aiMesh* mesh,MaterialProperties& matproperties);
+    void processMatProperties(const aiMesh* mesh, MaterialProperties& matproperties);
     void processVertex(const aiMesh* mesh, std::vector<Vertex>& vertices);
     void processIndices(const aiMesh* mesh, std::vector<unsigned int>& indices);
     void processTextures(const aiMesh* mesh, std::vector<Texture>& textures);

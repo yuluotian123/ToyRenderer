@@ -1,13 +1,61 @@
 #pragma once
 #include <string>
 #include <glm\glm.hpp>
-constexpr  int SCREEN_WIDTH = 1980;
-constexpr int SCREEN_HEIGHT = 1080;
+
+constexpr  int SCREEN_WIDTH = 1280;
+constexpr int SCREEN_HEIGHT = 720;
 constexpr float SCREEN_ASPECT_RATIO = SCREEN_WIDTH / (float)SCREEN_HEIGHT;
 
 //TO DO:把这两个拓展成两个类
 typedef int Shaderid;
 typedef std::string Materialid;
+
+struct shaderid //管理shader的类型：但我没想好有哪些类型，所以现在Shaderid还是typedef
+{
+public:
+	enum class SHADERTYPE:int {
+		SHADER_DEFAULT,
+		SHADER_UNCAM,
+		SHADER_UNLIT,
+		SHADER_UNLIT_UNCAM,
+		SHADER_COMPUTE,
+		SHADER_NONE
+	};
+	shaderid(unsigned id) {
+		ID = id;
+		type = SHADERTYPE::SHADER_DEFAULT;
+	}
+	shaderid(unsigned id, SHADERTYPE _type) {
+		ID = id;
+		type = _type;
+	}
+	shaderid(const shaderid& id)
+	{
+		ID = id.ID;
+		type = id.type;
+	};
+public:
+	void Use() const;
+	void Dispatch(unsigned int x, unsigned int y = 1, unsigned int z = 1) const;
+
+	void setBool(const std::string& name, bool value) const;
+	void setInt(const std::string& name, int value) const;
+	void setFloat(const std::string& name, float value) const;
+	void setMat4(const std::string& name, const glm::mat4& mat) const;
+	void setVec3(const std::string& name, const glm::vec3& vec) const;
+	void setVec4(const std::string& name, const glm::vec4& vec) const;
+public:
+	SHADERTYPE type;
+
+	unsigned int ID;
+};
+
+struct materialid {
+public:
+	shaderid id;
+
+	std::string materialType;
+};
 
 //纯粹为了偷懒,必须要事先声明flags才能用
 #define TREEBOOL(variable,id)\
@@ -48,13 +96,3 @@ ImGui::Input##variableType("##value",&variable); \
 ImGui::NextColumn();\
 ImGui::PopID();\
 
-struct shaderid //管理shader的类型：但我没想好有哪些类型，所以现在shaderid还是typedef
-{
-public:
-	bool useCamera = true;
-	bool useLight = true;
-	bool useModel = true;
-	bool useIBL = true;
-
-	unsigned int id = 0;
-};

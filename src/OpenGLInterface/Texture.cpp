@@ -468,8 +468,6 @@ void CubeMap::convolveCubeMap(const unsigned int environmentMap, Shaderid convol
     shader->setInt("environmentMap", 0);
     shader->setMat4("captureProjection", captureProjection);
 
-    glViewport(0, 0, width, height);
-
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap);
 

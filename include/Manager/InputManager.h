@@ -7,7 +7,7 @@ class Camera;
 static bool firstMouse = true;
 static float lastX = SCREEN_WIDTH/ 2.0f;
 static float lastY = SCREEN_HEIGHT / 2.0f;
-
+//π‹¿Ì ‰»Î
 class InputManager:public Singleton<InputManager>
 {
 	friend class Singleton<InputManager>;

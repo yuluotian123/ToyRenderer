@@ -8,10 +8,12 @@ class Shader
 public:
     bool setup(const std::string vertexPath, const std::string fragmentPath,
         const std::string geometryPath = "");
+    bool setup(const std::string computePath);
 
     ~Shader();
 
-    void Use();
+    void Use() const;
+    void Dispatch(unsigned int x, unsigned int y = 1, unsigned int z = 1) const;
 
     void setBool(const std::string& name, bool value) const;
     void setInt(const std::string& name, int value) const;
@@ -22,6 +24,7 @@ public:
 
     unsigned int ID = 0;
     std::string VPath, FPath, GPath;
+    std::string CPath = "";
 
     //TO DO：把他们放到Shaderid里
     bool useCamera = true;

@@ -1,5 +1,4 @@
 #pragma once
-//现在是用的别人的版本 未来可能会自己重新写一个更好的
 struct Primitive
 {
 	Primitive(unsigned int _num) : verticesNum(_num) {};

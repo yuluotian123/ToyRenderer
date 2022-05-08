@@ -23,6 +23,7 @@ public:
 	void loadHDRTexture(const std::string& filePath);
 	unsigned int loadDDSTexture(const char* filePath);	
 	void generateTexture(const int width, const int height, const int attachnum, TEXTURETYPE type);
+
 	std::string getFileExtension(const std::string& filePath);
 	void Free();
    

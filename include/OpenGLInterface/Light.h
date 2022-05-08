@@ -1,17 +1,17 @@
 #pragma once
 #include "glm/glm.hpp"
 #include "Base\Common.h"
+//暂时还没想清楚的部分
 class Light
 {
 public:
 	std::string type;
 	glm::vec3 color = glm::vec3(1.f);
 	float intensity = 1.f;
+    
+	bool hasShadow = true;
 
-	//TODO: prepare for shadow
-	glm::mat4 shadowProjectionMat = glm::mat4(0.f);
-
-	virtual void setshadowProjectionMat() {};
+	virtual void setshadowMatrix() {};
 };
 
 class DirectionalLight :public Light {

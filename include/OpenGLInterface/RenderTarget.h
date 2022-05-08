@@ -30,7 +30,8 @@ public:
 	void use() const;
 	bool blitTo(const RenderTarget& FBO, GLbitfield mask);
 
-	void clear(GLbitfield clearTarget, glm::vec3 color, bool inuse = false);
+	void clear(GLbitfield clearTarget, glm::vec3 color, bool inuse = true);
+	static void clear(glm::vec3 color = {0.1f,0.1f,0.1f}, GLbitfield clearTarget = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);//清理当前fbo
 
 	void resizeforCapture(unsigned int width, unsigned int height);
 

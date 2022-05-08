@@ -15,6 +15,14 @@ Shaderid MaterialSystem::registerShader(const std::string& VPath, const std::str
 	return shader->ID;
 }
 
+Shaderid MaterialSystem::registerComputeShader(const std::string& CPath)
+{
+	std::shared_ptr<Shader> shader = std::make_shared<Shader>();
+	shader->setup(CPath);
+	ShaderList[shader->ID] = shader;
+	return shader->ID;
+}
+
 const Materialid MaterialSystem::registerMaterial(Shaderid shader,const std::string& materialType)
 {
 	if (!ShaderList[shader]) { printf("please check if you register this shader.\n"); return ""; }

@@ -99,7 +99,8 @@ void DisplayManager::ShowMaterialSystem()
      
     if (ImGui::CollapsingHeader("Shaders")) {
         int i = 0;
-        for (auto spair : MaterialSystem::getOrCreateInstance()->getRegisterShaderList()) {
+        for (auto& spair : MaterialSystem::getOrCreateInstance()->getRegisterShaderList()) {
+            if (scene->getShaderNameByShaderid(spair.first) == "") continue;
             ImGui::PushID(i);
             bool node_open = ImGui::TreeNode(scene->getShaderNameByShaderid(spair.first).c_str());
             if (node_open) {
@@ -120,7 +121,7 @@ void DisplayManager::ShowMaterialSystem()
     if (ImGui::CollapsingHeader("Materials")) {
         int j = 0;
         for (auto mpair : MaterialSystem::getOrCreateInstance()->getRegisterMaterialList()) {
-            ImGui::PushID(j);
+            ImGui::PushID(j*5000);
             bool node_open = ImGui::TreeNode(scene->getMaterialNameByMaterialid(mpair.first).c_str());
             if (node_open) {
                 for (unsigned int m = 0; m < mpair.second.size(); m++) {
@@ -200,15 +201,7 @@ void DisplayManager::AddModel(bool* open)
 
     if (ImGui::Button("Add"))
     {
-        Transform trans;
-        trans.translation = position;
-        trans.scaling = scalling;
-        trans.angle = angle;
-        trans.rotationAxis = rotationAxis;
-        std::shared_ptr<Model> model = std::make_shared<Model>(path, trans);
-        if (!(material == "" || material == "Null"))
-            model->SetMaterials(scene->getMaterialidByName(material));
-        scene->getModels().push_back(model);
+        scene->addModel(path, material, position, scalling, rotationAxis, angle);
         *open = false;
     }
 
@@ -286,25 +279,7 @@ void DisplayManager::ShowModels(int id)
 
 void DisplayManager::DeleteModel(std::shared_ptr<Model> model)
 {
-    for (auto mesh : model->getMeshes()) {
-        auto& map = MaterialSystem::getOrCreateInstance()->getRegisterMaterialList();
-        
-        for (auto it = map[mesh->getMaterial()->getMaterialType()].begin(); it != map[mesh->getMaterial()->getMaterialType()].end(); it++) {
-            if (*it == mesh->getMaterial()) 
-            {
-                map[mesh->getMaterial()->getMaterialType()].erase(it);
-                break;
-            }
-        }
-    }
-
-    for (auto it = scene->getModels().begin(); it != scene->getModels().end(); it++) {
-        if (*it == model)
-        {
-            scene->getModels().erase(it);
-            break;
-        }
-    }
+    scene->deleteModel(model);
 }
 
 void DisplayManager::ShowMeshes(std::shared_ptr<Mesh> mesh,int id, int modelid)
@@ -319,6 +294,7 @@ void DisplayManager::ShowMeshes(std::shared_ptr<Mesh> mesh,int id, int modelid)
     if (ImGui::Button("Reset")) RESET = (id+1)*(modelid*100+1);
     if (node_open) {
         //能够更改材质参数 还没想好怎么写
+        if (mesh->getMaterial())
         mesh->getMaterial()->ShowMaterialProperties((id * 100 + 1) * (modelid*100+1));
         ImGui::TreePop();
     }

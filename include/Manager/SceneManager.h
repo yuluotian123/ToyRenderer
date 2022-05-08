@@ -3,7 +3,7 @@
 #include "Base\Singleton.hpp"
 #include <string>
 
-//TO DO: SwitchScene
+
 class Scene;
 class SceneManager:public Singleton<SceneManager>
 {

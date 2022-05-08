@@ -118,7 +118,7 @@ vec3 DirectPBR(vec3 N,vec3 V,vec3 albedo,float rough,float metal){
           return color;
 }
 
-vec3 IBL(vec3 N,vec3 V,vec3 R,vec3 albedo,float rough,float metal){
+vec3 IBLPBR(vec3 N,vec3 V,vec3 R,vec3 albedo,float rough,float metal){
      vec3 irradiance = texture(irradianceMap, N).rgb;
 
      vec3 F0 = vec3(0.04f); 
@@ -169,7 +169,10 @@ void main()
 
      vec3 color =  DirectPBR(N,V,albedo,rough,metal);
      if(useIBL)
-     color += IBL(N,V,R,albedo,rough,metal);
+     color += IBLPBR(N,V,R,albedo,rough,metal);
+     else
+      color += vec3(0.025)* albedo;
+
       // HDR tonemapping
       color = color / (color + vec3(1.0));
       // gamma correct

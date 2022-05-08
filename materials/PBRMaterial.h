@@ -32,8 +32,10 @@ public:
 
 private:
     std::vector<Texture> textureList;
+
     float Metallic = 0.5f;
     float Roughness = 0.5f;
+
     bool useMetalmap = false;
     bool useRoughmap = false;
     bool useNormalmap = false;

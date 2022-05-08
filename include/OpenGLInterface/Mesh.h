@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 
+class Model;
 class Material;
 struct Vertex//顶点数据Attribs
 {
@@ -15,7 +16,7 @@ struct Vertex//顶点数据Attribs
 	glm::vec2 texCoords;
 };
 
-struct MaterialProperties//材质中通过loadModel获得的数据(疑似没啥用而且很耗费性能)
+struct MaterialProperties//材质中通过loadModel获得的数据(疑似没啥用)
 {
 	glm::vec3 AmbientColor = {0.f,0.f,0.f};
 	glm::vec3 DiffuseColor = { 0.f,0.f,0.f };
@@ -36,14 +37,14 @@ public:
 		setupMesh();
 	}
 	~Mesh();
-
 	void setupMesh();//设置attribs
 
+	void setParent(std::shared_ptr<Model> _parent) { ; };
 	void setMaterial(const Materialid& Type);//设置每个Mesh的material
 	void Draw() const;//更新uniform以及绘制mesh(采用material内置的参数)
-	void Draw(Shaderid shaderid) const; //用shader来绘制mesh
+	void DefaultDraw() const; //用shader来绘制mesh
 
-	std::shared_ptr<Material>& getMaterial() { return material; };//获取当前的material
+	const std::shared_ptr<Material>& getMaterial() const { return material; };//获取当前的material
 private:
 	unsigned int VAO,EBO,VBO;
 

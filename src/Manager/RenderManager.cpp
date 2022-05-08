@@ -28,7 +28,7 @@ void RenderManager::Render(float DeltaTime)
 {
 	glEnable(GL_DEPTH_TEST);
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	RenderTarget::clear();
 
 	context->setupCameraProperties(Rendercamera);
 

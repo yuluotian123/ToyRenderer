@@ -1,13 +1,13 @@
 #pragma once
 #include "OpenGLInterface\Texture.h"
 #include "Base\Register.h"
+#include "Base\Common.h"
 #include <vector>
 #include <string>
 #include <map>
 #include <glm\glm.hpp>
 #include "imgui.h"
 #include "imgui_stdlib.h"
-
 
 class Shader;
 class Material//用子类中声明数据的方式 代替了unordered_map<std::string,std::any> 提升一点点性能的同时 使得各个material的子类的功能更明确
@@ -27,17 +27,9 @@ public:
 	//给UI界面用
 	void setMaterialType(std::string type) { MaterialType = type; };
 	const std::string& getMaterialType() { return MaterialType; };
-public:
-    //可以通过material来设置对应shader数值 很鸡肋 暂时没有应用场景
-	void setBool(const std::string& name, bool value);
-	void setInt(const std::string& name, int value);
-	void setFloat(const std::string& name, float value);
-	void setMat4(const std::string& name, const glm::mat4& mat);
-	void setVec3(const std::string& name, const glm::vec3& vec);
-	void setVec4(const std::string& name, const glm::vec4& vec);
 private:
 	std::shared_ptr<Shader> shader;
 
-	std::string MaterialType;
+	Materialid MaterialType;
 };
 

@@ -1,3 +1,4 @@
+#include "OpenGLInterface\Material.h"
 #include "Manager\Scene.h"
 #include "OpenGLInterface\Camera.h"
 #include "OpenGLInterface\Model.h"
@@ -186,6 +187,42 @@ std::string Scene::getShaderNameByShaderid(Shaderid shaderid)
     }
 
     return "";
+}
+
+void Scene::addModel(const std::string& path, const Materialid& materialid, glm::vec3& position, glm::vec3& scalling, glm::vec3& rotationAxis, float angle)
+{
+    Transform trans;
+    trans.translation = position;
+    trans.scaling = scalling;
+    trans.angle = angle;
+    trans.rotationAxis = rotationAxis;
+    std::shared_ptr<Model> model = std::make_shared<Model>(path, trans);
+    if (!(materialid == "" || materialid == "Null"))
+        model->SetMaterials(getMaterialidByName(materialid));
+    models.push_back(model);
+}
+
+void Scene::deleteModel(std::shared_ptr<Model> model)
+{
+    for (auto mesh : model->getMeshes()) {
+        auto& map = MaterialSystem::getOrCreateInstance()->getRegisterMaterialList();
+
+        for (auto it = map[mesh->getMaterial()->getMaterialType()].begin(); it != map[mesh->getMaterial()->getMaterialType()].end(); it++) {
+            if (*it == mesh->getMaterial())
+            {
+                map[mesh->getMaterial()->getMaterialType()].erase(it);
+                break;
+            }
+        }
+    }
+
+    for (auto it = models.begin(); it != models.end(); it++) {
+        if (*it == model)
+        {
+            models.erase(it);
+            break;
+        }
+    }
 }
 
 std::shared_ptr<Camera> Scene::getMainCamera()

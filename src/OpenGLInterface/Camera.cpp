@@ -38,11 +38,11 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPi
 
 void Camera::ProcessMouseScroll(double yoffset)
 {
-    Zoom -= (float)yoffset;
-    if (Zoom < 1.0f)
-        Zoom = 1.0f;
-    if (Zoom > 45.0f)
-        Zoom = 45.0f;
+    Fov -= (float)yoffset;
+    if (Fov < 1.0f)
+        Fov = 1.0f;
+    if (Fov > 45.0f)
+        Fov = 45.0f;
 }
 
 //void Camera::ProcessArcBall(float x, float y)//不是很丝滑 
@@ -92,7 +92,7 @@ glm::mat4 Camera::GetViewMatrix()
 
 glm::mat4 Camera::GetProjectionMatrix()
 {
-    return glm::perspective(glm::radians(Zoom), SCREEN_ASPECT_RATIO, 0.1f, 100.0f);
+    return glm::perspective(glm::radians(Fov), Ar, NearPlane, FarPlane);
 }
 
 glm::mat4 Camera::GetInvViewMatrix()//我偷懒 我有罪 改天重写一下这两逆矩阵

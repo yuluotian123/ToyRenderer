@@ -1,4 +1,7 @@
+#include "OpenGLInterface\Material.h"
 #include "OpenGLInterface\Model.h"
+#include "Manager\MaterialSystem.h"
+#include "OpenGLInterface\Shader.h"
 #include <iostream>
 
 void Model::Draw() const
@@ -9,11 +12,11 @@ void Model::Draw() const
 
 }
 
-void Model::Draw(Shaderid shaderid) const
+void Model::DefaultDraw() const
 {
     if (meshes.empty()) return;
     for (auto& mesh : meshes)
-        mesh->Draw(shaderid);
+        mesh->DefaultDraw();
 }
 
 void Model::Update(float DeltaTime)

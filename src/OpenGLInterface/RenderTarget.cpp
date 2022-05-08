@@ -101,6 +101,12 @@ void RenderTarget::clear(GLbitfield clearTarget, glm::vec3 color,bool inuse)
         UseDefault();
 }
 
+void RenderTarget::clear(glm::vec3 color, GLbitfield clearTarget)
+{
+    glClearColor(color[0], color[1], color[2], 1.0f);
+    glClear(clearTarget);
+}
+
 void RenderTarget::resizeforCapture(unsigned int width, unsigned int height)
 {
     if (!isValid) return;
@@ -111,6 +117,7 @@ void RenderTarget::resizeforCapture(unsigned int width, unsigned int height)
 
     glBindRenderbuffer(GL_RENDERBUFFER, RBOid);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+    glViewport(0, 0, width, height);
 }
 
 const Texture& RenderTarget::getcolorTexture(unsigned int id) const

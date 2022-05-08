@@ -111,18 +111,86 @@ bool Shader::setup(const std::string vertexPath, const std::string fragmentPath,
 	}
 }
 
+bool Shader::setup(const std::string computePath)
+{
+	std::string shaderFolderPath = "resource/Shaders/";
+
+	std::string computeCode;
+	std::stringstream cShaderStream;
+	std::ifstream cShaderFile(shaderFolderPath + computePath);
+	if(!cShaderFile.good()) {
+		std::cout << "couldn't find ComputeShader in " << shaderFolderPath << computePath << std::endl;
+		return false;
+	}
+	else {
+		cShaderStream << cShaderFile.rdbuf();
+
+		cShaderFile.close();
+
+		computeCode = cShaderStream.str();
+		const char* cShaderCode = computeCode.c_str();
+
+		int computeShader = glCreateShader(GL_COMPUTE_SHADER);
+		glShaderSource(computeShader, 1, &cShaderCode, NULL);
+		glCompileShader(computeShader);
+		int success;
+		char infoLog[512];
+		glGetShaderiv(computeShader, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			glGetShaderInfoLog(computeShader, 512, NULL, infoLog);
+			std::cout << "Computer shader compilation failed" << infoLog << std::endl;
+			return false;
+		}
+
+		ID = glCreateProgram();
+		glAttachShader(ID, computeShader);
+		glLinkProgram(ID);
+
+		glGetProgramiv(ID, GL_LINK_STATUS, &success);
+		if (!success) {
+			glGetProgramInfoLog(ID, 512, NULL, infoLog);
+			printf("Shader Linking failed %s\n", infoLog);
+			return false;
+		}
+
+		CPath = computePath;
+
+		glDeleteShader(computeShader);
+		return true;
+	}
+}
+
 Shader::~Shader()
 {
 	glDeleteProgram(ID);
 }
 
-void Shader::Use()
+void Shader::Use() const
 {
 	if (!ID) {
 		printf("Shader not set.\n");
 		return;
 	}
+	if(CPath!="") {
+		printf("Shader is Compute Shader.\n");
+		return;
+	}
 	glUseProgram(ID);
+}
+
+void Shader::Dispatch(unsigned int x, unsigned int y, unsigned int z) const
+{
+	if (!ID) {
+		printf("Shader not set.\n");
+		return;
+	}
+	if (CPath == "") {
+		printf("Shader is not a Compute Shader.\n");
+		return;
+	}
+	glDispatchCompute(x, y, z);
+	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 }
 
 void Shader::setBool(const std::string& name, bool value) const

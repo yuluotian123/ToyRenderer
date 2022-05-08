@@ -10,7 +10,7 @@ public:
 	void setup(const std::string& path, bool isHDR, unsigned int resolution);
 	void fillCubeMapWithHDR(const Shaderid buildCubeMapShader);
 
-    unsigned& getTextureID() { return skyCube.ID; };
+    const unsigned getTextureID() const { return skyCube.ID; };
 	const unsigned getResolution() const { return resolution; };
 	const bool IsHDR() const { return ishdr; };
 private:

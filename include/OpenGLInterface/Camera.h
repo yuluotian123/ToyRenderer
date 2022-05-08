@@ -16,11 +16,11 @@ constexpr float YAW = -90.0f;
 constexpr float PITCH = 0.0f;
 constexpr float SPEED = 5.0f;
 constexpr float SENSITIVITY = 0.1f;
-constexpr float ZOOM = 45.0f;
 constexpr float NEARP = 0.1f;
 constexpr float FARP = 100.0f;
+constexpr float AR = SCREEN_ASPECT_RATIO;
+constexpr float FOV = 45.0f;
 
-//定义视锥体（TO DO）
 class Camera
 {
 public:
@@ -30,45 +30,54 @@ public:
     //void ProcessArcBall(float xoffset, float yoffset);
 
 public:
-    Camera(glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
+    Camera(glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), 
+        float yaw = YAW, float pitch = PITCH,float nearp = NEARP,float farp = FARP,float fov = FOV )
         : Front(glm::vec3(0.0f, 0.0f, -1.0f)),
         MovementSpeed(SPEED),
         MouseSensitivity(SENSITIVITY),
-        Zoom(ZOOM),
+        Ar(AR),
         Position(position),
         WorldUp(up),
         Yaw(yaw),
-        Pitch(pitch) 
+        Pitch(pitch),
+        NearPlane(nearp),
+        FarPlane(farp),
+        Fov(fov)
     {
         updateCameraVectors();
     }
 
-    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
+    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, 
+        float yaw, float pitch, float nearp, float farp, float fov)
         : Front(glm::vec3(0.0f, 0.0f, -1.0f)),
         MovementSpeed(SPEED),
         MouseSensitivity(SENSITIVITY),
-        Zoom(ZOOM),
+        Ar(AR),
         Position(glm::vec3(posX, posY, posZ)),
         WorldUp(glm::vec3(upX, upY, upZ)),
         Yaw(yaw),
-        Pitch(pitch) 
+        Pitch(pitch),
+        NearPlane(nearp),
+        FarPlane(farp),
+        Fov(fov)
     {
         updateCameraVectors();
     }
 
     glm::mat4 GetViewMatrix();
     glm::mat4 GetProjectionMatrix();
-
     glm::mat4 GetInvViewMatrix();
     glm::mat4 GetInvProjectionMatrix();
 
     glm::vec3* GetPositionp() { return &Position; };
     float* getSpeedp() { return &MovementSpeed; };
 
-    const glm::vec3& GetPosition() { return Position; };
+    const glm::vec3 GetPosition() const { return Position; };
+    const float GetNearPlane()const { return NearPlane; };
+    const float GetFarPlane()const { return FarPlane; };
+    const float GetFoV() const { return Fov; };
 private:
     void updateCameraVectors();
-
 private:
     // camera Attributes
     glm::vec3 Position;
@@ -79,9 +88,13 @@ private:
     // euler Angles
     float Yaw;
     float Pitch;
+    //camera frustum
+    float Fov;
+    float Ar;
+    float NearPlane;
+    float FarPlane;
     // camera options
     float MovementSpeed;
     float MouseSensitivity;
-    float Zoom;
 };
 

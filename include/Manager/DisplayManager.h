@@ -9,6 +9,7 @@ class Scene;
 class Mesh;
 class Model;
 class Material;
+//显示ui界面，显示窗口，创建上下文
 class DisplayManager:public Singleton<DisplayManager>
 {
 	friend class Singleton<DisplayManager>;
@@ -25,7 +26,7 @@ private:
 	void ShowSceneList();
 	void ShowMaterialSystem();
 
-	//showSceneList的子方法
+	//showSceneList的子方法（以后可能会单独建立一个类）
 	void ShowModelList();
 	void AddModel(bool* open);//疑似爆炸吃性能（loadModel）
 	void DeleteModel(std::shared_ptr<Model> model);

@@ -13,8 +13,10 @@ bool RenderContext::Init()
 	curScene = SceneManager::getOrCreateInstance()->getCurrentScene();
 	SkyBoxshader = MaterialSystem::getOrCreateInstance()->registerShader("skyBoxVs.glsl", "skyBoxFs.glsl");
 
-	if (curScene->getSkybox() && curScene->getSkybox()->IsHDR())
-		InitSkyCubeMapFromHDR();
+	if (curScene->getSkybox())
+		InitSkyboxforIBL();
+
+
 
 	return true;
 }
@@ -29,20 +31,22 @@ void RenderContext::DrawOpaqueRenderList()
 
 void RenderContext::DrawOpaqueRenderList(Shaderid shaderid)
 {
+	std::shared_ptr<Shader> shader = MaterialSystem::getOrCreateInstance()->getRegisterShaderByID(shaderid);
+	shader->Use();
 	for (auto& model : curScene->getModels()) {
-		setupModelMatrix(model);
-		model->Draw(shaderid);
+		shader->setMat4(CameraUniformNameList::model, model->getModelMatrix());
+		model->DefaultDraw();
 	}
 }
 
-void RenderContext::InitSkyCubeMapFromHDR()
+void RenderContext::InitSkyboxforIBL()
 {
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);//让立方体贴图边缘平滑
 
 	std::shared_ptr<Skybox> skybox = curScene->getSkybox();
 
 	irradianceMap.createCubeMap(32, 32, CUBEMAPTYPE::HDR_MAP);
-	specFilteredMap.createCubeMap(256, 256, CUBEMAPTYPE::PREFILTER_MAP);
+	specFilteredMap.createCubeMap(256,256, CUBEMAPTYPE::PREFILTER_MAP);
 
 	brdfLUT.loadHDRTexture("G:/gitHubGameProject/ToyRenderer/resource/Skybox/ibl_brdf_lut.png");
 
@@ -53,6 +57,7 @@ void RenderContext::InitSkyCubeMapFromHDR()
 	specFilterShader = MaterialSystem::getOrCreateInstance()->registerShader("EquiRectangularToCubeVs.glsl", "preFilterFs.glsl");
 
 	EquiRecToCubeRT.use();
+	if(skybox->IsHDR())
 	skybox->fillCubeMapWithHDR(EquiRecToCubeshader);
 
 	EquiRecToCubeRT.resizeforCapture(irradianceMap.width, irradianceMap.height);

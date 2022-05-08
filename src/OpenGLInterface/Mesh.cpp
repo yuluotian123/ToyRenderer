@@ -72,7 +72,7 @@ void Mesh::setMaterial(const  Materialid& Type)//创建新材质 （以及替换旧的材质）
     material = MaterialSystem::getOrCreateInstance()->CreateMaterial(Type);
 
     if (!material) {
-        printf("fail to get material.\n");
+        return;
     }
 
     material->RegisterMeshData(textures);
@@ -81,7 +81,7 @@ void Mesh::setMaterial(const  Materialid& Type)//创建新材质 （以及替换旧的材质）
 void Mesh::Draw() const
 {
     if (!material){
-        printf("please attach a material on the mesh.");
+        return;
     }
 
     material->UpdateUniform();
@@ -91,10 +91,8 @@ void Mesh::Draw() const
     glBindVertexArray(0);
 }
 
-void Mesh::Draw(Shaderid shaderid) const
-{
-    MaterialSystem::getOrCreateInstance()->getRegisterShaderByID(shaderid)->Use();
-    
+void Mesh::DefaultDraw() const
+{   
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
