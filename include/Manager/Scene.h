@@ -46,7 +46,6 @@ private:
 	void loadCamera(json scenejson);
 	void loadSkyBox(json scenejson);
 private:
-	//这里显示的与其说是shader和material 倒不如说是shading model
 	std::unordered_map<std::string,Shaderid> shaderidList;//将每个用户注册的shaderid找到一个name来对应，用来在ui界面显示
 	std::unordered_map<std::string,Materialid> materialidList;//将每个用户注册的materialid找到一个name来对应，用来在ui界面显示
 

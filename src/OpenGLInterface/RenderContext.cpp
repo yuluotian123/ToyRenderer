@@ -16,8 +16,6 @@ bool RenderContext::Init()
 	if (curScene->getSkybox())
 		InitSkyboxforIBL();
 
-
-
 	return true;
 }
 
@@ -32,7 +30,7 @@ void RenderContext::DrawOpaqueRenderList()
 void RenderContext::DrawOpaqueRenderList(Shaderid shaderid)
 {
 	std::shared_ptr<Shader> shader = MaterialSystem::getOrCreateInstance()->getRegisterShaderByID(shaderid);
-	shader->Use();
+	shader->Use();	
 	for (auto& model : curScene->getModels()) {
 		shader->setMat4(CameraUniformNameList::model, model->getModelMatrix());
 		model->DefaultDraw();
