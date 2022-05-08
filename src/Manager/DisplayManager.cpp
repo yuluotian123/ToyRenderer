@@ -167,15 +167,69 @@ void DisplayManager::ShowLightList()
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Color");
-            ImGui::TableSetColumnIndex(1);
-            ImGui::AlignTextToFramePadding();
-            ImGui::InputFloat3("##value", (float*)&light->color);
+            bool node_open = ImGui::TreeNode((light->type + std::to_string(i)).c_str());
+            if (node_open) {
+                ImGui::PushID(i + 1000);
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0);
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Intensity");
+                ImGui::TableSetColumnIndex(1);
+                ImGui::AlignTextToFramePadding();
+                ImGui::SetNextItemWidth(-FLT_MIN);
+                ImGui::InputFloat("##value", (float*)&light->intensity);
+                ImGui::PopID();
 
+                ImGui::PushID(i + 2000);
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0);
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Color");
+                ImGui::TableSetColumnIndex(1);
+                ImGui::AlignTextToFramePadding();
+                ImGui::SetNextItemWidth(-FLT_MIN);
+                ImGui::InputFloat3("##value", (float*)&light->color);
+                ImGui::PopID();
+
+                if (light->type == "DirectionalLight") {
+                    ImGui::PushID(i + 3000);
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::Text("Direction");
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::InputFloat3("##value", (float*)&std::dynamic_pointer_cast<DirectionalLight>(light)->direction);
+                    ImGui::PopID();
+                }
+                else if (light->type == "PointLight") {
+                    ImGui::PushID(i + 3000);
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::Text("Radius");
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::InputFloat("##value", (float*)&std::dynamic_pointer_cast<PointLight>(light)->radius);
+                    ImGui::PopID();
+
+                    ImGui::PushID(i + 4000);
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::Text("Position");
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::InputFloat3("##value", (float*)&std::dynamic_pointer_cast<PointLight>(light)->position);
+                    ImGui::PopID();
+                }
+                ImGui::TreePop();
+            }
             ImGui::PopID();
         }
-
-
         ImGui::EndTable();
     }
 }

@@ -4,6 +4,7 @@
 #include "Manager\MaterialSystem.h"
 #include "OpenGLInterface\Material.h"
 #include "OpenGLInterface\Shader.h"
+#include "Base\AABB.h"
 
 Mesh::~Mesh()
 {
@@ -96,5 +97,19 @@ void Mesh::DefaultDraw() const
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+}
+
+std::shared_ptr<AABB> Mesh::getOrCreateBounding()
+{
+    if (!BoundingBox)
+    {
+        std::vector<glm::vec3> Points;
+        for (unsigned i = 0; i <vertices.size() ; ++i)
+        {
+            Points.push_back(vertices[i].position);
+        }
+        BoundingBox = std::make_shared<AABB>(Points);
+    }
+    return BoundingBox;
 }
 

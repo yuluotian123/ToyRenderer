@@ -70,13 +70,13 @@
     <ClInclude Include="include\OpenGLInterface\RenderContext.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\Manager\LightSystem.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="include\OpenGLInterface\Skybox.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="include\OpenGLInterface\Primitive.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Base\AABB.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -127,11 +127,11 @@
     <ClCompile Include="materials\PBRMaterial.cpp" />
     <ClCompile Include="src\Base\Register.cpp" />
     <ClCompile Include="src\OpenGLInterface\Light.cpp" />
-    <ClCompile Include="src\Manager\LightSystem.cpp" />
     <ClCompile Include="src\Manager\Skybox.cpp" />
     <ClCompile Include="src\OpenGLInterface\Primitive.cpp" />
     <ClCompile Include="src\OpenGLInterface\RenderContext.cpp" />
     <ClCompile Include="src\Base\Common.cpp" />
+    <ClCompile Include="src\Base\AABB.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\Shaders\pbrLitVs.glsl" />
@@ -143,5 +143,6 @@
     <None Include="resource\Shaders\skyBoxFs.glsl" />
     <None Include="resource\Shaders\irradianceFs.glsl" />
     <None Include="resource\Shaders\preFilterFs.glsl" />
+    <None Include="resource\Shaders\ClusterCs.glsl" />
   </ItemGroup>
 </Project>

@@ -137,7 +137,15 @@ void Scene::loadLights(json scenejson)
 
             lights.push_back(dirLight);
         }
-
+        if (light["Type"] == "PointLight") {
+            std::shared_ptr<PointLight> pLight = std::make_shared<PointLight>();
+            pLight->type = light["Type"];
+            pLight->color = glm::vec3((float)light["Color"][0], (float)light["Color"][1], (float)light["Color"][2]);
+            pLight->intensity = (float)light["Intensity"];
+            pLight->position = glm::vec3((float)light["Position"][0], (float)light["Position"][1], (float)light["Position"][2]);
+            pLight->radius = light["Radius"];
+            lights.push_back(pLight);
+        }
     }
 }
 

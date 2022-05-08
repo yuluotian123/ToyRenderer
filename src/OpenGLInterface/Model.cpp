@@ -2,6 +2,7 @@
 #include "OpenGLInterface\Model.h"
 #include "Manager\MaterialSystem.h"
 #include "OpenGLInterface\Shader.h"
+#include "Base\AABB.h"
 #include <iostream>
 
 void Model::Draw() const
@@ -32,6 +33,18 @@ void Model::SetMaterials(const Materialid& Materialid)
     for (auto& mesh : meshes) {
         mesh->setMaterial(Materialid);
     }
+}
+
+std::shared_ptr<AABB> Model::getOrCreateBounding()
+{
+    if (!BoundingBox) {
+        BoundingBox = std::make_shared<AABB>();
+        for (unsigned i = 0; i <meshes.size(); ++i)
+        {
+            BoundingBox->combine(*meshes[i]->getOrCreateBounding());
+        }
+    }
+    return BoundingBox;
 }
 
 std::shared_ptr<Mesh> Model::getMeshbyIndex(int Index)

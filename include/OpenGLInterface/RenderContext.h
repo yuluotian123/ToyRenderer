@@ -31,10 +31,9 @@ public:
 	void DrawSkybox();
 
 	void setupCameraProperties(std::shared_ptr<Camera> camera);
-
-	void setupLightProperties();
 private:
 	void setupModelMatrix(std::shared_ptr<Model> model);//考虑将此方法移入Model->Draw
+
 	void InitSkyboxforIBL();
 
 private:

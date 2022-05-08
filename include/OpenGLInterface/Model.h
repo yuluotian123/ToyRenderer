@@ -5,7 +5,6 @@
 #include <Assimp/postprocess.h>
 #include <memory>
 #include <vector>
-#include <unordered_set>
 
 //考虑将transform新建为一个单独的类
 struct Transform {
@@ -27,6 +26,7 @@ struct Transform {
     }
 };
 
+class AABB;
 //目前所有物体都以model为单位 
 class Model
 {
@@ -45,6 +45,7 @@ public:
 
     void SetMaterials(const Materialid& Materialid);//一次性设置Model中所有mesh的material
 
+    std::shared_ptr<AABB> getOrCreateBounding();
     std::vector<std::shared_ptr<Mesh>>& getMeshes() { return meshes; };
     std::shared_ptr<Mesh> getMeshbyIndex(int Index);
 
@@ -59,9 +60,18 @@ public:
 
     const std::string& getDirectory() { return directory; };
 private:
+    const aiScene* m_Scene;
+
+    std::string directory;
+    std::vector<Texture> load_textures;
+    std::vector<std::shared_ptr<Mesh>> meshes;
+    std::shared_ptr<AABB> BoundingBox;
+
+    glm::mat4 modelMatrix;
+    Transform trans;
+private:
     //获取mesh以及texture，MatProperties数据（matProperties数据暂时没有使用，因为希望后期可以让用户自己设置）
     void loadModel(const std::string& meshPath);
-
     void processNode(aiNode* node, const aiScene* scene);
     std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene);
     void processMatProperties(const aiMesh* mesh, MaterialProperties& matproperties);
@@ -69,15 +79,5 @@ private:
     void processIndices(const aiMesh* mesh, std::vector<unsigned int>& indices);
     void processTextures(const aiMesh* mesh, std::vector<Texture>& textures);
     void loadTextures(aiMaterial* material, std::vector<Texture>& textures, aiTextureType type, const std::string& typeName);
-private:
-    const aiScene* m_Scene;
-
-    std::string directory;
-    std::vector<Texture> load_textures;
-    std::vector<std::shared_ptr<Mesh>> meshes;
-    std::unordered_set<Materialid> materialList;//用于查找当前model用到的所有material？（还没想好怎么设计）
-
-    glm::mat4 modelMatrix;
-    Transform trans;
 };
 

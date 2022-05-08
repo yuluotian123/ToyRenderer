@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 
+class AABB;
 class Model;
 class Material;
 struct Vertex//顶点数据Attribs
@@ -33,18 +34,17 @@ public:
 		this->indices = indices;
 		this->textures = textures;
 		this->matproperties = matproperties;
-
 		setupMesh();
 	}
 	~Mesh();
-	void setupMesh();//设置attribs
 
-	void setParent(std::shared_ptr<Model> _parent) { ; };
 	void setMaterial(const Materialid& Type);//设置每个Mesh的material
+
 	void Draw() const;//更新uniform以及绘制mesh(采用material内置的参数)
 	void DefaultDraw() const; //用shader来绘制mesh
 
 	const std::shared_ptr<Material>& getMaterial() const { return material; };//获取当前的material
+	std::shared_ptr<AABB> getOrCreateBounding();
 private:
 	unsigned int VAO,EBO,VBO;
 
@@ -53,5 +53,8 @@ private:
 	std::vector<Texture> textures;
 	MaterialProperties matproperties;
 	std::shared_ptr<Material> material;
+	std::shared_ptr<AABB> BoundingBox;
+private:
+	void setupMesh();//设置attribs
 };
 

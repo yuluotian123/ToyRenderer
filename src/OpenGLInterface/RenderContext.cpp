@@ -126,20 +126,3 @@ void RenderContext::setupModelMatrix(std::shared_ptr<Model> model)
 	}
 }
 
-void RenderContext::setupLightProperties()
-{
-	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
-	{
-		if (shaderP.second->useLight) {
-			for (auto& light : curScene->getLights()) {
-				if (light->type == "DirectionalLight") {
-					shaderP.second->Use();
-					shaderP.second->setVec3("LightColor",light->color);
-					shaderP.second->setFloat("LightIntensity", light->intensity);
-					shaderP.second->setVec3("LightDirection", std::dynamic_pointer_cast<DirectionalLight>(light)->direction);
-				}
-
-			}
-		}
-	}
-}

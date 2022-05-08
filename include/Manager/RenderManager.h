@@ -4,7 +4,6 @@
 
 class Scene;
 class Camera;
-
 class RenderManager:public Singleton<RenderManager>
 {
 	friend class Singleton<RenderManager>;
@@ -15,10 +14,22 @@ public:
 
 	void Render(float DeltaTime);
 private:
-	RenderManager() {};
+	void Cluster_AABBpass();
+	void setLightProperties();
+private:
+	RenderManager()=default;
 	std::shared_ptr<Camera> Rendercamera;
 	std::shared_ptr<Scene> curScene;
 private:
 	std::shared_ptr<RenderContext> context;
+
+	Shaderid ClusterShader;
+	const unsigned int gridSizeX = 16;
+	const unsigned int gridSizeY = 9;
+	const unsigned int gridSizeZ = 24;
+	struct AABB
+	{
+
+	};
 };
 

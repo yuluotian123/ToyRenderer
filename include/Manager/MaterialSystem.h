@@ -11,7 +11,7 @@
 
 class Material;
 class Shader;
-//设计极其诡异的一个部分 未来会改写shaderid和materialid部分 让他好用一点
+//设计极其诡异的一个部分 未来有可能会改写shaderid和materialid部分 让他好用一点
 class MaterialSystem :public Singleton<MaterialSystem>
 {
 	friend class Singleton<MaterialSystem>;
