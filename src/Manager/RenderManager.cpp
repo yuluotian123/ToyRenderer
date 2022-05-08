@@ -33,6 +33,8 @@ void RenderManager::Render(float DeltaTime)
 
 	RenderTarget::clear();
 
+	updateLightSSBO();
+
 	context->setupCameraProperties(Rendercamera);
 
 	setLightProperties();
@@ -40,6 +42,22 @@ void RenderManager::Render(float DeltaTime)
 	context->DrawOpaqueRenderList();
 
 	context->DrawSkybox();
+}
+
+void RenderManager::updateLightSSBO()
+{
+		glGenBuffers(1, &LightSSBO);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, LightSSBO);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, maxLightCount * sizeof(struct GPUpointLight), NULL, GL_DYNAMIC_DRAW);
+		GPUpointLight* gpulights = (GPUpointLight*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+		std::vector<std::shared_ptr<Light>> lights = curScene->getLights();
+		for (unsigned int i = 0; i < lights.size(); ++i) {
+			if (lights[i]->type == "PointLight") {
+
+
+
+			}
+		}
 }
 
 void RenderManager::Cluster_AABBpass()

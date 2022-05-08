@@ -14,10 +14,10 @@ enum class Camera_Movement{
 
 constexpr float YAW = -90.0f;
 constexpr float PITCH = 0.0f;
-constexpr float SPEED = 5.0f;
+constexpr float SPEED = 15.0f;
 constexpr float SENSITIVITY = 0.1f;
 constexpr float NEARP = 0.1f;
-constexpr float FARP = 100.0f;
+constexpr float FARP = 1000.0f;
 constexpr float AR = SCREEN_ASPECT_RATIO;
 constexpr float FOV = 45.0f;
 

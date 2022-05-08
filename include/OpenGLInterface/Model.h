@@ -60,16 +60,16 @@ public:
 
     const std::string& getDirectory() { return directory; };
 private:
-    const aiScene* m_Scene;
-
     std::string directory;
+
     std::vector<Texture> load_textures;
     std::vector<std::shared_ptr<Mesh>> meshes;
-    std::shared_ptr<AABB> BoundingBox;
 
+    std::shared_ptr<AABB> BoundingBox;
     glm::mat4 modelMatrix;
     Transform trans;
 private:
+    const aiScene* m_Scene;
     //获取mesh以及texture，MatProperties数据（matProperties数据暂时没有使用，因为希望后期可以让用户自己设置）
     void loadModel(const std::string& meshPath);
     void processNode(aiNode* node, const aiScene* scene);

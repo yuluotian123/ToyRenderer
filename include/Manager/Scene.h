@@ -26,7 +26,7 @@ public:
 
 	std::shared_ptr<Skybox> getSkybox() { return MainSkybox; };
 
-	std::shared_ptr<Camera> getMainCamera();
+	std::shared_ptr<Camera> getMainCamera() { return MainCamera; };
 
 	Materialid getMaterialidByName(const std::string& Name);
 	Shaderid getShaderidByName(const std::string& Name);

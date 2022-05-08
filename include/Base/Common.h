@@ -2,8 +2,8 @@
 #include <string>
 #include <glm\glm.hpp>
 
-constexpr  int SCREEN_WIDTH = 1280;
-constexpr int SCREEN_HEIGHT = 720;
+constexpr  int SCREEN_WIDTH = 1440;
+constexpr int SCREEN_HEIGHT = 960;
 constexpr float SCREEN_ASPECT_RATIO = SCREEN_WIDTH / (float)SCREEN_HEIGHT;
 
 //纯粹是为了材质实例化服务的，结果导致用起来非常难受，需要转一道弯

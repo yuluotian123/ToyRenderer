@@ -41,13 +41,23 @@
       "Path": "G:/gitHubGameProject/ToyRenderer/resource/Skybox/tokyo/tokyo.hdr"
     }
   ],
+  "camera": [
+    {
+      "Position": [ 0.0, 1.0, 0.0 ],
+      "Up": [ 0.0, 1.0, 0.0 ],
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "NearPlane": 0.1,
+      "FarPlane": 1000.0
+    }
+  ],
   "models": [
     {
       "Material": "DefaultPBR",
-      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/MetalRoughSpheres/MetalRoughSpheres.gltf",
-      "Position": [ 0.0, 0.0, -8.0 ],
+      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/Sponza/Sponza.gltf",
+      "Position": [ 40.0, -30.0, 0.0 ],
       "Rotation": [ 0.0, 1.0, 1.0, 1.0 ],
-      "Scaling": [ 0.3, 0.3, 0.3 ]
+      "Scaling": [ 0.08, 0.08, 0.08 ]
     }
   ]
 }

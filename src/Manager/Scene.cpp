@@ -58,7 +58,17 @@ bool Scene::loadContext()
 void Scene::loadCamera(json scenejson)
 {
     //TO DO：用json设定内容
-    MainCamera = getMainCamera();
+    json camerasjson = scenejson["camera"];
+    for (unsigned i = 0; i < camerasjson.size(); i++) {
+        json camera = camerasjson[i];
+        glm::vec3 position = glm::vec3((float)camera["Position"][0], (float)camera["Position"][1], (float)camera["Position"][2]);
+        glm::vec3 up = glm::vec3((float)camera["Up"][0], (float)camera["Up"][1], (float)camera["Up"][2]);
+        float yaw = camera["Yaw"];
+        float pitch = camera["Pitch"];
+        float nearp = camera["NearPlane"];
+        float farp = camera["FarPlane"];
+        MainCamera = std::make_shared<Camera>(position,up,yaw,pitch,nearp,farp);
+    }
 }
 
 void Scene::loadShaderandMaterial(json scenejson)
@@ -231,11 +241,4 @@ void Scene::deleteModel(std::shared_ptr<Model> model)
             break;
         }
     }
-}
-
-std::shared_ptr<Camera> Scene::getMainCamera()
-{
-    if (!MainCamera)
-        MainCamera = std::make_shared<Camera>();
-    return MainCamera;
 }

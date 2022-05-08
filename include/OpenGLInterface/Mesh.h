@@ -52,6 +52,7 @@ private:
 	std::vector<Vertex> vertices;
 	std::vector<Texture> textures;
 	MaterialProperties matproperties;
+
 	std::shared_ptr<Material> material;
 	std::shared_ptr<AABB> BoundingBox;
 private:
