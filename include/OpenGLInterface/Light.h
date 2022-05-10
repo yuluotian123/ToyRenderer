@@ -1,5 +1,5 @@
 #pragma once
-#include "glm/glm.hpp"
+#include "glm\glm.hpp"
 #include "Base\Common.h"
 class Light
 {
@@ -20,13 +20,5 @@ public:
 class PointLight :public Light {
 public:
 	glm::vec3 position = glm::vec3(0.f);
-	float radius = 2.f;
-};
-
-//用于clusterlight里的ssbo 我在想如果以后都用clusterlight那是不是可以不需要PointLight
-struct GPUpointLight {
-	float radius;
-	glm::vec3 position;
-	glm::vec3 Color;
-	float Intensity;
+	float radius = 10.f;
 };

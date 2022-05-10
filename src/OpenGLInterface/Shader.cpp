@@ -172,10 +172,6 @@ void Shader::Use() const
 		printf("Shader not set.\n");
 		return;
 	}
-	if(CPath!="") {
-		printf("Shader is Compute Shader.\n");
-		return;
-	}
 	glUseProgram(ID);
 }
 

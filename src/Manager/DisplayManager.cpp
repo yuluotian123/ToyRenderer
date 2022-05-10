@@ -160,6 +160,8 @@ void DisplayManager::ShowModelList()
 
 void DisplayManager::ShowLightList()
 {
+    static bool addlight = false;
+    if (addlight) addLight(&addlight);
     if (ImGui::BeginTable("Lights", 2, ImGuiTableFlags_BordersOuter | ImGuiTableFlags_Resizable)) {
         for (unsigned int i = 0; i < scene->getLights().size(); i++) {
             std::shared_ptr<Light> light = scene->getLights()[i];
@@ -232,6 +234,31 @@ void DisplayManager::ShowLightList()
         }
         ImGui::EndTable();
     }
+    if (ImGui::Button("Add Light")) {
+        addlight = true;
+    }
+}
+
+void DisplayManager::addLight(bool* open)
+{
+    ImGui::Begin("Add Light");
+
+    static glm::vec3 position{ 0.f };
+    static glm::vec3 color{ 1.f };
+    static float radius = 10.f;
+    static float intensity = 10.f;
+
+    ImGui::InputFloat3("Position", (float*)&position);
+    ImGui::InputFloat3("Color", (float*)&color);
+    ImGui::InputFloat("Radius", &radius);
+    ImGui::InputFloat("Intensity", &intensity);
+    if (ImGui::Button("Add"))
+    {
+        scene->addLight(position,radius,color,intensity);
+        *open = false;
+    }
+
+    ImGui::End();
 }
 
 void DisplayManager::AddModel(bool* open)

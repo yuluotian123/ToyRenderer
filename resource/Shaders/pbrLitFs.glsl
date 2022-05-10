@@ -18,8 +18,6 @@ uniform bool useMetalRoughMap;
 uniform bool useIBL;
 
 uniform vec3 CameraPos;
-uniform float ScreenWidth;
-uniform float ScreenHeight;
 
 uniform vec3 LightDirection;
 uniform vec3 LightColor;

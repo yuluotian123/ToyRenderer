@@ -5,7 +5,7 @@
 
 void PBRMaterial::UpdateUniform()//可以不逐实例？但是每个material实例的设置也可能不同
 {
-	getShader()->Use();
+	getShader()->Use();//浪费
 	
 
 	getShader()->setFloat(pbrUniformNameList::Metal, Metallic);

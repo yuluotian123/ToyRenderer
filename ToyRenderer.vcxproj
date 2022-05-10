@@ -147,6 +147,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Passes\DrawModelPass.h" />
+    <ClInclude Include="include\Passes\BasePass.h" />
+    <ClInclude Include="include\Passes\ClusterLight.h" />
     <ClInclude Include="include\Base\AABB.h" />
     <ClInclude Include="include\Base\Common.h" />
     <ClInclude Include="include\Base\Singleton.hpp" />
@@ -170,8 +173,12 @@
     <ClInclude Include="include\OpenGLInterface\RenderContext.h" />
     <ClInclude Include="include\OpenGLInterface\Skybox.h" />
     <ClInclude Include="include\OpenGLInterface\Primitive.h" />
+    <ClInclude Include="include\Passes\SkyBoxPass.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Passes\DrawModelPass.cpp" />
+    <ClCompile Include="src\Passes\SkyBoxPass.cpp" />
+    <ClCompile Include="src\Passes\ClusterLight.cpp" />
     <ClCompile Include="src\Base\AABB.cpp" />
     <ClCompile Include="src\Base\Common.cpp" />
     <ClCompile Include="src\OpenGLInterface\Primitive.cpp" />

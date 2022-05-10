@@ -242,3 +242,15 @@ void Scene::deleteModel(std::shared_ptr<Model> model)
         }
     }
 }
+
+void Scene::addLight(glm::vec3 position, float radius, glm::vec3 color, float intensity)
+{
+    std::shared_ptr<PointLight> light = std::make_shared<PointLight>();
+
+    light->color = color;
+    light->position = position;
+    light->radius = radius;
+    light->intensity = intensity;
+    light->type = "PointLight";
+    lights.push_back(light);
+}

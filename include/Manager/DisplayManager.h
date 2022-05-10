@@ -35,6 +35,7 @@ private:
 	void ResetMaterial(std::shared_ptr<Mesh> mesh,int* open);
 
 	void ShowLightList();
+	void addLight(bool* open);//目前只支持PointLight
 private:
 	bool CreateWindow();
 	bool CreateImguiContext();

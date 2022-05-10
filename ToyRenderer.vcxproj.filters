@@ -79,6 +79,18 @@
     <ClInclude Include="include\Base\AABB.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\Passes\ClusterLight.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Passes\BasePass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Passes\SkyBoxPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Passes\DrawModelPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OpenGLInterface\Camera.cpp">
@@ -132,6 +144,9 @@
     <ClCompile Include="src\OpenGLInterface\RenderContext.cpp" />
     <ClCompile Include="src\Base\Common.cpp" />
     <ClCompile Include="src\Base\AABB.cpp" />
+    <ClCompile Include="src\Passes\ClusterLight.cpp" />
+    <ClCompile Include="src\Passes\SkyBoxPass.cpp" />
+    <ClCompile Include="src\Passes\DrawModelPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\Shaders\pbrLitVs.glsl" />

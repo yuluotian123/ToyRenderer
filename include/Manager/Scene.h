@@ -36,6 +36,8 @@ public:
 	void addModel(const std::string& path, const Materialid& materialid, glm::vec3& position, glm::vec3& scalling, glm::vec3& rotationAxis, float angle);
 	void deleteModel(std::shared_ptr<Model> model);
 
+	void addLight(glm::vec3 position, float radius, glm::vec3 color, float intensity);
+
 	bool load_Error = false;
 private:
 	bool loadContext();
