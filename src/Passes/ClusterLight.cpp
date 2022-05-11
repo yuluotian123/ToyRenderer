@@ -10,14 +10,17 @@
 void ClusterLight::init(std::shared_ptr<RenderContext>& context,std::shared_ptr<Camera>& Rendercamera)
 {
 	ClusterShader = MaterialSystem::getOrCreateInstance()->registerComputeShader("ClusterCs.glsl");
-	LightSSBO = context->GenBuffer(GL_SHADER_STORAGE_BUFFER, maxLightCount * sizeof(GPUpointLight),NULL, GL_DYNAMIC_DRAW, 0);
+	aabbSSBO = context->GenBuffer(GL_SHADER_STORAGE_BUFFER, clusterNum * sizeof(clusterAABB), NULL, GL_STATIC_COPY, 1);
+	LightSSBO = context->GenBuffer(GL_SHADER_STORAGE_BUFFER, maxLightCount * sizeof(GPUpointLight),NULL, GL_DYNAMIC_DRAW, 2);
+	LightListSSBO = context->GenBuffer(GL_SHADER_STORAGE_BUFFER, clusterNum*maxLightPerCluster * sizeof(unsigned int), NULL, GL_STATIC_COPY, 3);
 }
 
 void ClusterLight::update(std::shared_ptr<RenderContext>& context,std::shared_ptr<Camera>& Rendercamera)
 {
-	Cluster_AABBPass(Rendercamera);
-    
+
 	updateLightSSBO(SceneManager::getOrCreateInstance()->getCurrentScene()->getLights());
+
+	Cluster_AABBPass(Rendercamera);
 }
 
 void ClusterLight::updateLightSSBO(std::vector<std::shared_ptr<Light>>& lights)

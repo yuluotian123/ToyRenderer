@@ -1,6 +1,5 @@
 #include "OpenGLInterface\RenderContext.h"
 #include "Manager\MaterialSystem.h"
-#include "Manager\SceneManager.h"
 #include "OpenGLInterface\Model.h"
 #include "OpenGLInterface\Shader.h"
 #include "OpenGLInterface\Camera.h"

@@ -31,14 +31,69 @@ void RenderManager::ShutDown()
 
 void RenderManager::Render(float DeltaTime)
 {
-	glEnable(GL_DEPTH_TEST);
-
 	RenderTarget::clear();
 
 	setLightProperties();
 
-	for (auto& pass : passes)
-		pass->update(context, Rendercamera);
+	for (unsigned i = 0; i < passes.size();i++) {
+		if (passes[i]->getOrder() == -1) { i++; continue; }
+		switch (passes[i]->getRendertype())
+		{
+		case RenderPassType::PassType_Normal:
+			passes[i]->update(context, Rendercamera);
+			break;
+		case RenderPassType::PassType_Once:
+			passes[i]->update(context, Rendercamera);
+			passes[i]->finish();
+			break;
+		case RenderPassType::PassType_Parallel: {
+			int j = i;
+			while (j < passes.size())
+			{
+				if (passes[i]->getOrder() != passes[j]->getOrder())break;
+				passes[j++]->update(context, Rendercamera);
+			}
+			i = j - 1;
+			break;
+		}
+		case RenderPassType::PassType_ParallelOnce: {
+			int j = i;
+			while (j < passes.size())
+			{
+				if (passes[i]->getOrder() != passes[j]->getOrder())break;
+
+				passes[j++]->update(context, Rendercamera);
+			}
+			while (i < j)
+			{
+				passes[i++]->finish();
+			}
+			i--;
+			break;
+		}
+		case RenderPassType::PassType_Delay:
+			passes[i]->setPassType(RenderPassType::PassType_Normal);
+			break;
+		}
+	}
+}
+
+void RenderManager::registerPassData(const std::string& name, std::any data)
+{
+	if (PassDatas.find(name) != PassDatas.end()) {
+		printf("You has already register %s.", name.c_str());
+		return;
+	}
+	PassDatas[name] = data;
+}
+
+void RenderManager::updatePassData(const std::string& name, const std::any& data)
+{
+	PassDatas[name] = data;
+}
+
+const std::any& RenderManager::getPassDataByName(const std::string& name) {
+	if (PassDatas.find(name) != PassDatas.end()) return PassDatas[name];
 }
 
 void RenderManager::setLightProperties()

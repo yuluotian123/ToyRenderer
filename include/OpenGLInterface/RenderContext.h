@@ -6,8 +6,6 @@
 
 class Camera;
 class Model;
-class Light;
-class Scene;
 namespace CameraUniformNameList {//（为什么c++没有静态类？）
 	const std::string view = "ViewMatrix";
 	const std::string projection = "ProjectionMatrix";

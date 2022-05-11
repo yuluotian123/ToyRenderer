@@ -9,8 +9,10 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 
+//用子类中声明数据的方式 代替了unordered_map<std::string,std::any> 提升一点点性能的同时 使得各个material的子类的功能更明确
+//下次做材质系统用生成器模式会比较好
 class Shader;
-class Material//用子类中声明数据的方式 代替了unordered_map<std::string,std::any> 提升一点点性能的同时 使得各个material的子类的功能更明确
+class Material
 {
 public:
 	Material(){};

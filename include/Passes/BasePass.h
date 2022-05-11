@@ -1,6 +1,8 @@
 #pragma once
+#include "Manager\RenderManager.h"
 #include "Base\Common.h"
 #include <memory>
+
 enum class RenderPassType:int
 {
 	PassType_Normal,
