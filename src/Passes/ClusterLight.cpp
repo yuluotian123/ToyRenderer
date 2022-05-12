@@ -10,17 +10,37 @@
 void ClusterLight::init(std::shared_ptr<RenderContext>& context,std::shared_ptr<Camera>& Rendercamera)
 {
 	ClusterShader = MaterialSystem::getOrCreateInstance()->registerComputeShader("ClusterCs.glsl");
+	LightCullingShader = MaterialSystem::getOrCreateInstance()->registerComputeShader("LightCullingCs.glsl");
 	aabbSSBO = context->GenBuffer(GL_SHADER_STORAGE_BUFFER, clusterNum * sizeof(clusterAABB), NULL, GL_STATIC_COPY, 1);
 	LightSSBO = context->GenBuffer(GL_SHADER_STORAGE_BUFFER, maxLightCount * sizeof(GPUpointLight),NULL, GL_DYNAMIC_DRAW, 2);
 	LightListSSBO = context->GenBuffer(GL_SHADER_STORAGE_BUFFER, clusterNum*maxLightPerCluster * sizeof(unsigned int), NULL, GL_STATIC_COPY, 3);
+	LightGridSSBO = context->GenBuffer(GL_SHADER_STORAGE_BUFFER, clusterNum * 2 * sizeof(unsigned int), NULL, GL_STATIC_COPY, 4);
+
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, aabbSSBO);
+	//clusterAABB* p = (clusterAABB*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+	//for (int i = 0; i < gridSizeZ; i++) {
+	//	for (int i = 0; i < gridSizeY; i++) {
+	//		for (int i = 0; i < gridSizeX; i++) {
+	//			printf("%f %f %f", (*p).maxPoint.x, (*p).maxPoint.y, (*p).maxPoint.z);
+	//			p++;
+	//			printf("\n");
+	//		}
+	//		printf("\n");
+	//	}
+	//	printf("\n");
+	//}
+
+
+	//glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 void ClusterLight::update(std::shared_ptr<RenderContext>& context,std::shared_ptr<Camera>& Rendercamera)
 {
 
 	updateLightSSBO(SceneManager::getOrCreateInstance()->getCurrentScene()->getLights());
-
 	Cluster_AABBPass(Rendercamera);
+	LightCullingPass(Rendercamera);
 }
 
 void ClusterLight::updateLightSSBO(std::vector<std::shared_ptr<Light>>& lights)
@@ -49,8 +69,6 @@ void ClusterLight::Cluster_AABBPass(std::shared_ptr<Camera>& Rendercamera)
 
 	AABBshader->Use();
 	AABBshader->useCamera = false;
-	AABBshader->useIBL = false;
-	AABBshader->useLight = false;
 
 	AABBshader->setFloat("NearPlane", Rendercamera->GetNearPlane());
 	AABBshader->setFloat("FarPlane", Rendercamera->GetFarPlane());
@@ -58,4 +76,15 @@ void ClusterLight::Cluster_AABBPass(std::shared_ptr<Camera>& Rendercamera)
 	AABBshader->setInt("ScreenWidth", SCREEN_WIDTH);
 	AABBshader->setInt("ScreenHeight", SCREEN_HEIGHT);
 	AABBshader->Dispatch(gridSizeX, gridSizeY, gridSizeZ);
+
+}
+
+void ClusterLight::LightCullingPass(std::shared_ptr<Camera>& Rendercamera)
+{
+	std::shared_ptr<Shader> Cullingshader = MaterialSystem::getOrCreateInstance()->getRegisterShaderByID(LightCullingShader);
+	Cullingshader->Use();
+	Cullingshader->useCamera = false;
+	Cullingshader->setMat4("ViewMatrix",Rendercamera->GetViewMatrix());
+	Cullingshader->setInt("MaxLightPerTile",maxLightPerCluster);
+	Cullingshader->Dispatch(gridSizeX, gridSizeY, gridSizeZ);
 }

@@ -39,7 +39,7 @@ public:
         loadModel(meshPath);
     }
 
-    void Draw() const;//模型的渲染，调用mesh的draw方法
+    void Draw();//模型的渲染，调用mesh的draw方法
     void DefaultDraw() const;//用shader来进行模型渲染(不再调用material)
     void Update(float DeltaTime); //处理模型的移动等动画
 

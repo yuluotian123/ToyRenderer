@@ -84,7 +84,6 @@ void Mesh::Draw() const
     if (!material){
         return;
     }
-
     material->UpdateUniform();
 
     glBindVertexArray(VAO);

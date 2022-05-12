@@ -28,7 +28,6 @@ public:
 
     //TO DO：把他们放到Shaderid里
     bool useCamera = true;
-    bool useLight = true; 
     bool useIBL = true;
 };
 

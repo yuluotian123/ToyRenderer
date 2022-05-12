@@ -208,6 +208,7 @@
     <None Include="resource\Shaders\EquiRectangularToCubeFs.glsl" />
     <None Include="resource\Shaders\EquiRectangularToCubeVs.glsl" />
     <None Include="resource\Shaders\irradianceFs.glsl" />
+    <None Include="resource\Shaders\LightCullingCs.glsl" />
     <None Include="resource\Shaders\pbrLitFs.glsl" />
     <None Include="resource\Shaders\pbrLitVs.glsl" />
     <None Include="resource\Shaders\preFilterFs.glsl" />

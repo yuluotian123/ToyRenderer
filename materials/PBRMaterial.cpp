@@ -5,9 +5,7 @@
 
 void PBRMaterial::UpdateUniform()//可以不逐实例？但是每个material实例的设置也可能不同
 {
-	getShader()->Use();//浪费
-	
-
+	//shader的use被放在了model里
 	getShader()->setFloat(pbrUniformNameList::Metal, Metallic);
 	getShader()->setFloat(pbrUniformNameList::Rough, Roughness);
 

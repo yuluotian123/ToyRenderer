@@ -41,12 +41,10 @@ void SkyBoxPass::init(std::shared_ptr<RenderContext>& context, std::shared_ptr<C
 	{
 		//绑定这三张图片在指定的3个位置（直接每帧更新是不是不太好）
 		//全局的tex应该怎么绑定比较好呢？
-		if (shaderP.second->useIBL) {
 			shaderP.second->Use();
 			shaderP.second->setInt("irradianceMap", 10);
 			shaderP.second->setInt("specularMap", 11);
 			shaderP.second->setInt("brdfLUT", 12);
-		}
 	}
 
 	glActiveTexture(GL_TEXTURE0 + 10);

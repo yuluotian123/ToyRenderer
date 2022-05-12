@@ -5,19 +5,27 @@
 #include "Base\AABB.h"
 #include <iostream>
 
-void Model::Draw() const
+void Model::Draw()
 {
+    std::shared_ptr<Shader> shader = nullptr;//不再每个mesh调用shader，而是如果下一个mesh的shader不变 就不再重新调用shader
+    this->UpdateModelMatrix();
     if (meshes.empty()) return;
-    for (auto& mesh : meshes)
+    for (auto& mesh : meshes) {
+        if (mesh->getMaterial()->getShader() != shader) {
+            mesh->getMaterial()->getShader()->Use();
+            mesh->getMaterial()->getShader()->setMat4("ModelMatrix", modelMatrix);
+            shader = mesh->getMaterial()->getShader();
+        }
         mesh->Draw();
-
+    }
 }
 
 void Model::DefaultDraw() const
 {
     if (meshes.empty()) return;
-    for (auto& mesh : meshes)
+    for (auto& mesh : meshes) {
         mesh->DefaultDraw();
+    }
 }
 
 void Model::Update(float DeltaTime)

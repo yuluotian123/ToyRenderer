@@ -13,6 +13,12 @@ struct clusterAABB {
 	glm::vec4 maxPoint;
 };
 
+constexpr unsigned int maxLightCount = 80;
+constexpr unsigned int gridSizeX = 10*SCREEN_ASPECT_RATIO;
+constexpr unsigned int gridSizeY = 10;
+constexpr unsigned int gridSizeZ = 24;
+constexpr unsigned int clusterNum = gridSizeX * gridSizeY * gridSizeZ;
+constexpr unsigned int maxLightPerCluster = 25;
 
 class Light;
 class ClusterLight:public BasePass
@@ -27,19 +33,11 @@ public:
 
 	void updateLightSSBO(std::vector<std::shared_ptr<Light>>& lights);
 	void Cluster_AABBPass(std::shared_ptr<Camera>& Rendercamera);
+	void LightCullingPass(std::shared_ptr<Camera>& Rendercamera);
 private:
-	Shaderid ClusterShader = -1;
+	Shaderid ClusterShader,LightCullingShader;
 
-	unsigned LightSSBO = -1;
-	unsigned aabbSSBO = -1;
-	unsigned LightListSSBO = -1;
-
+	unsigned LightSSBO,aabbSSBO,LightListSSBO, LightGridSSBO;
 	unsigned int PointLightCount = 0;
-	const unsigned int maxLightCount = 80;
-	const unsigned int gridSizeX = 16;
-	const unsigned int gridSizeY = 9;
-	const unsigned int gridSizeZ = 24;
-	const unsigned int clusterNum = gridSizeX * gridSizeY * gridSizeZ;
-	const unsigned int maxLightPerCluster = 24;
 };
 

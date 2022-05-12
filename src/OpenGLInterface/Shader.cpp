@@ -169,7 +169,7 @@ Shader::~Shader()
 void Shader::Use() const
 {
 	if (!ID) {
-		printf("Shader not set.\n");
+		printf("You cant use a Shader not set.\n");
 		return;
 	}
 	glUseProgram(ID);
@@ -178,7 +178,7 @@ void Shader::Use() const
 void Shader::Dispatch(unsigned int x, unsigned int y, unsigned int z) const
 {
 	if (!ID) {
-		printf("Shader not set.\n");
+		printf("You cant dispatch a Shader not set.\n");
 		return;
 	}
 	if (CPath == "") {

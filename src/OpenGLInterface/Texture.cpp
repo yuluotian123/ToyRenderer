@@ -436,8 +436,6 @@ void CubeMap::equiRectangularToCubeMap(const unsigned int equirectangularMap, Sh
 
     trshader->Use();
     trshader->useCamera = false;
-    trshader->useLight = false;
-    trshader->useIBL = false;
 
     trshader->setInt("equirectangularMap", 0);
     trshader->setMat4("captureProjection", captureProjection);
@@ -462,8 +460,6 @@ void CubeMap::convolveCubeMap(const unsigned int environmentMap, Shaderid convol
     std::shared_ptr<Shader> shader = MaterialSystem::getOrCreateInstance()->getRegisterShaderByID(convolveShaderid);
     shader->Use();
     shader->useCamera = false;
-    shader->useLight = false;
-    shader->useIBL = false;
 
     shader->setInt("environmentMap", 0);
     shader->setMat4("captureProjection", captureProjection);
@@ -487,8 +483,6 @@ void CubeMap::preFilterCubeMap(const unsigned int environmentMap, const unsigned
 
     shader->Use();
     shader->useCamera = false;
-    shader->useLight = false;
-    shader->useIBL = false;
 
     shader->setInt("environmentMap", 0);
     shader->setMat4("captureProjection", captureProjection);

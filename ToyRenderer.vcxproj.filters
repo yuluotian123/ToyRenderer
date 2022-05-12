@@ -159,5 +159,6 @@
     <None Include="resource\Shaders\irradianceFs.glsl" />
     <None Include="resource\Shaders\preFilterFs.glsl" />
     <None Include="resource\Shaders\ClusterCs.glsl" />
+    <None Include="resource\Shaders\LightCullingCs.glsl" />
   </ItemGroup>
 </Project>

@@ -100,7 +100,6 @@ void RenderManager::setLightProperties()
 {
 	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
 	{
-		if (shaderP.second->useLight) {
 			for (auto& light : curScene->getLights()) {
 				if (light->type == "DirectionalLight") {
 					shaderP.second->Use();
@@ -110,7 +109,6 @@ void RenderManager::setLightProperties()
 				}
 			}
 		}
-	}
 }
 
 void RenderManager::registerPass(const std::shared_ptr<BasePass>& pass)

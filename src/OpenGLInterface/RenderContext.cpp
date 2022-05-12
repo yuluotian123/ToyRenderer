@@ -7,7 +7,6 @@
 void RenderContext::DrawOpaqueRenderList(std::vector<std::shared_ptr<Model>>& opaquemodels)
 {
 	for (auto& model : opaquemodels) {
-		setupModelMatrix(model);
 		model->Draw();
 	}
 }
@@ -17,7 +16,7 @@ void RenderContext::DrawOpaqueRenderList(Shaderid shaderid, std::vector<std::sha
 	std::shared_ptr<Shader> shader = MaterialSystem::getOrCreateInstance()->getRegisterShaderByID(shaderid);
 	shader->Use();	
 	for (auto& model : opaquemodels) {
-		shader->setMat4(CameraUniformNameList::model, model->getModelMatrix());
+		shader->setMat4("ModelMatrix", model->getModelMatrix());
 		model->DefaultDraw();
 	}
 }
@@ -72,14 +71,11 @@ void RenderContext::ChangeDatainBuffer(GLenum Target, GLuint BufferID, GLsizeipt
 	glBindBuffer(Target, 0);
 }
 
-void RenderContext::setupModelMatrix(std::shared_ptr<Model> model)
+void RenderContext::GetDatainBuffer(GLenum Target, GLint BufferID, GLsizeiptr size, GLvoid** Data)
 {
-	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
-	{
-		if (shaderP.second->useCamera) {
-			shaderP.second->Use();
-			shaderP.second->setMat4(CameraUniformNameList::model, model->getModelMatrix());
-		}
-	}
+	glBindBuffer(Target, BufferID);
+	GLvoid* p = (GLvoid*)glMapBuffer(Target, GL_READ_WRITE);
+	memcpy(*Data, p, size);
+	glUnmapBuffer(Target);
+	glBindBuffer(Target, 0);
 }
-
