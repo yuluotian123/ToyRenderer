@@ -37,8 +37,7 @@ void ClusterLight::init(std::shared_ptr<RenderContext>& context,std::shared_ptr<
 
 void ClusterLight::update(std::shared_ptr<RenderContext>& context,std::shared_ptr<Camera>& Rendercamera)
 {
-
-	updateLightSSBO(SceneManager::getOrCreateInstance()->getCurrentScene()->getLights());
+	updateLightSSBO(SceneManager::getOrCreateInstance()->getCurrentScene()->getLights());//性能消耗很大 如果是静态场景可以不用update
 	Cluster_AABBPass(Rendercamera);
 	LightCullingPass(Rendercamera);
 }
