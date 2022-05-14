@@ -86,6 +86,8 @@ public:
     const float GetNearPlane()const { return NearPlane; };
     const float GetFarPlane()const { return FarPlane; };
     const float GetFoV() const { return Fov; };
+    const glm::vec3 GetFront() const { return Front; };
+    //const glm::vec3 GetFront() const { return Front; };
 private:
     void updateCameraVectors();
 private:

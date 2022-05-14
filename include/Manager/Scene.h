@@ -23,6 +23,7 @@ public:
 	std::shared_ptr<Model> getModelByIndex(int index);
 
 	std::vector<std::shared_ptr<Light>>& getLights() { return lights; };
+	std::shared_ptr <DirectionalLight>& getMainLight();
 
 	std::shared_ptr<Skybox> getSkybox() { return MainSkybox; };
 

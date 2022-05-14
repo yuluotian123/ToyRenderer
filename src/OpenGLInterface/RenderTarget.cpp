@@ -1,7 +1,7 @@
 #include "OpenGLInterface\RenderTarget.h"
 #define DEFAULT_FRAMEBUFFER 0
 
-bool RenderTarget::createRenderTarget(unsigned _width, unsigned _height, ENUM_TYPE _type)
+bool RenderTarget::createRenderTarget(unsigned _width, unsigned _height, ENUM_TYPE _type,unsigned arrayNum)
 {
     width = _width;
     height = _height;
@@ -45,6 +45,10 @@ bool RenderTarget::createRenderTarget(unsigned _width, unsigned _height, ENUM_TY
         break;
     case RenderTarget::ENUM_TYPE_DEPTH:
         if (!GenDepth(width, height))
+            printf("fail to GenDepth.\n");
+        break;
+    case RenderTarget::ENUM_TYPE_DEPTH_ARRAY:
+        if (!GenDepthArray(width, height,arrayNum))
             printf("fail to GenDepth.\n");
         break;
     case RenderTarget::ENUM_TYPE_CUBE_DEPTH:
@@ -145,6 +149,7 @@ const Texture& RenderTarget::getdepthTexture() const
         return Texture::Invalid;
 
     if (type != ENUM_TYPE_DEPTH
+        &&type != ENUM_TYPE_DEPTH_ARRAY
         && type != ENUM_TYPE_CUBE_DEPTH
         && type != ENUM_TYPE_GBUFFER)
         return Texture::Invalid;
@@ -334,6 +339,23 @@ bool RenderTarget::GenDepth(unsigned width, unsigned height)
     }
 
     return true;
+}
+
+bool RenderTarget::GenDepthArray(unsigned width, unsigned height,unsigned depthNum)
+{
+    glGenFramebuffers(1, &ID);
+    glBindFramebuffer(GL_FRAMEBUFFER, ID);
+    depthTexture.generateTexture(width, height, depthNum, TEXTURETYPE::SING_2D_ARRAY_HDR_DEP_BORDER);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    isValid = isComplete();
+    if (!isValid) {
+        printf("Framebuffer is not complete!\n");
+        return false;
+    }
 }
 
 bool RenderTarget::GenCubeDepth(unsigned width, unsigned height)

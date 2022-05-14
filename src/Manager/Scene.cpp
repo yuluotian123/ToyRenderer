@@ -171,6 +171,17 @@ std::shared_ptr<Model> Scene::getModelByIndex(int index)
     return models[index];
 }
 
+std::shared_ptr<DirectionalLight>& Scene::getMainLight()
+{
+    std::shared_ptr<DirectionalLight> mainLight;
+    for (auto& light : lights) {
+        if (light->type == "DirectionalLight") {
+            mainLight = std::dynamic_pointer_cast<DirectionalLight>(light);
+        }
+    }
+    return mainLight;
+}
+
 Materialid Scene::getMaterialidByName(const std::string& Name)
 {
     if (materialidList.find(Name) != materialidList.end())

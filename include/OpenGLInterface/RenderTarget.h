@@ -21,12 +21,13 @@ public:
 		ENUM_TYPE_RED,
 		ENUM_TYPE_COLOR_FLOAT,
 		ENUM_TYPE_DEPTH,
+		ENUM_TYPE_DEPTH_ARRAY,
 		ENUM_TYPE_CUBE_DEPTH,
 		ENUM_TYPE_GBUFFER,
 		ENUM_TYPE_DYNAMIC_COLOR
 	};
 
-	bool createRenderTarget(unsigned width, unsigned height, ENUM_TYPE type);
+	bool createRenderTarget(unsigned width, unsigned height, ENUM_TYPE type,unsigned arrayNum = 0);
 
 	void use() const;
 	bool blitTo(const RenderTarget& FBO, GLbitfield mask);
@@ -52,6 +53,7 @@ private:
 	bool GenColor(unsigned width, unsigned height, bool isFloat = false);
 	bool GenRed(unsigned width, unsigned height);
 	bool GenDepth(unsigned width, unsigned height);
+	bool GenDepthArray(unsigned width, unsigned height,unsigned depthNum);
 	bool GenCubeDepth(unsigned width, unsigned height);
 private:
 	ENUM_TYPE type;
