@@ -91,6 +91,9 @@
     <ClInclude Include="include\Passes\DrawModelPass.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\Passes\CSMshadowMap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OpenGLInterface\Camera.cpp">
@@ -147,6 +150,7 @@
     <ClCompile Include="src\Passes\ClusterLight.cpp" />
     <ClCompile Include="src\Passes\SkyBoxPass.cpp" />
     <ClCompile Include="src\Passes\DrawModelPass.cpp" />
+    <ClCompile Include="src\Passes\CSMshadowMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\Shaders\pbrLitVs.glsl" />
@@ -160,5 +164,7 @@
     <None Include="resource\Shaders\preFilterFs.glsl" />
     <None Include="resource\Shaders\ClusterCs.glsl" />
     <None Include="resource\Shaders\LightCullingCs.glsl" />
+    <None Include="resource\Shaders\CSMshadowmapFs.glsl" />
+    <None Include="resource\Shaders\CSMshadowmapVs.glsl" />
   </ItemGroup>
 </Project>

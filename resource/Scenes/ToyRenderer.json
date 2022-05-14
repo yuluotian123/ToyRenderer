@@ -22,15 +22,8 @@
     {
       "Type": "DirectionalLight",
       "Color": [ 1.0, 1.0, 1.0 ],
-      "Intensity": 2.0,
+      "Intensity": 0.5,
       "Direction": [ 0.0, -1.0, -1.0 ]
-    },
-    {
-      "Type": "PointLight",
-      "Color": [ 1.0, 1.0, 1.0 ],
-      "Intensity": 10.0,
-      "Position": [ 0.0, 0.0, 0.0 ],
-      "Radius": 10.0
     }
   ],
   "skybox": [
@@ -42,21 +35,28 @@
   ],
   "camera": [
     {
-      "Position": [ 0.0, 1.0, 0.0 ],
+      "Position": [-270.0, 150.0, 0.0 ],
       "Up": [ 0.0, 1.0, 0.0 ],
       "Yaw": 0.0,
-      "Pitch": 0.0,
-      "NearPlane": 0.1,
+      "Pitch": -25.0,
+      "NearPlane": 1.0,
       "FarPlane": 1000.0
     }
   ],
   "models": [
     {
       "Material": "DefaultPBR",
-      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/Sponza/Sponza.gltf",
-      "Position": [ 100.0, -40.0, 0.0 ],
+      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/lost_empire/lost_empire.obj",
+      "Position": [ 0.0, 0.0, 0.0 ],
+      "Rotation": [ 90.0, 0.0, 1.0, 0.0 ],
+      "Scaling": [ 3.00, 3.00, 3.00 ]
+    },
+    {
+      "Material": "DefaultPBR",
+      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/MetalRoughSpheres/MetalRoughSpheres.gltf",
+      "Position": [ 0.0, 120.0, 0.0 ],
       "Rotation": [ 0.0, 1.0, 1.0, 1.0 ],
-      "Scaling": [ 0.1, 0.1, 0.1 ]
+      "Scaling": [ 5.00, 5.00, 5.00 ]
     }
   ]
 }

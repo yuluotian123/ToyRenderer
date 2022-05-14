@@ -34,8 +34,9 @@ void InputManager::ShutDown()
 void InputManager::processInput(GLFWwindow* window,float deltaTime)
 {
 	ImGuiIO& io = ImGui::GetIO();
-	if(!io.WantCaptureKeyboard)
-	    glfw_keyInput(window, deltaTime);
+	if (!io.WantCaptureKeyboard) {
+		glfw_keyInput(window, deltaTime);
+	}
 	if (!io.WantCaptureMouse)
 		glfw_mouseInput(window, deltaTime);
 }
@@ -56,7 +57,6 @@ void InputManager::glfw_keyInput(GLFWwindow* window, float deltaTime)
 		UsingCamera->ProcessKeyboard(Camera_Movement::UP, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 		UsingCamera->ProcessKeyboard(Camera_Movement::DOWN, deltaTime);
-
 }
 
 void InputManager::glfw_mouseInput(GLFWwindow* window, float deltatime)
@@ -66,12 +66,6 @@ void InputManager::glfw_mouseInput(GLFWwindow* window, float deltatime)
 		float lastX = 0.5f * ImGui::GetIO().MouseDelta.x;
 		float lastY = -0.5f * ImGui::GetIO().MouseDelta.y;
 		UsingCamera->ProcessMouseMovement(lastX, lastY);
-	}
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) 
-	{
-		/*float lastX = ImGui::GetIO().MouseDelta.x;
-		float lastY = ImGui::GetIO().MouseDelta.y;
-		UsingCamera->ProcessArcBall(lastX,lastY);*/
 	}
 }
 

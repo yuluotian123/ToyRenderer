@@ -49,6 +49,7 @@ std::shared_ptr<Material> MaterialSystem::CreateMaterial(const Materialid& id)
 		{
 			std::shared_ptr<Material> curM= std::static_pointer_cast<Material>(x.second());
 			curM->setShader(ShaderList[sid]);
+			ShaderList[sid]->isMaterial = true;
 			curM->setMaterialType(id);
 			MaterialList[id].push_back(curM);
 			return curM;

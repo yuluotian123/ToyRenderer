@@ -27,7 +27,6 @@ public:
     std::string CPath = "";
 
     //TO DO：把他们放到Shaderid里
-    bool useCamera = true;
-    bool useIBL = true;
+    bool isMaterial = false;
 };
 

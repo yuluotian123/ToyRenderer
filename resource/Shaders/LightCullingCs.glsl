@@ -12,14 +12,15 @@ layout(std430,binding = 1) buffer clusterAABB{
 };
 
 struct PointLight{
+	vec4 position;
+	vec4 color;
     float radius;
-	vec3 position;
-	vec3 color;
 	float intensity;
+    float padding[2];
 };
 
 layout(std430,binding = 2) buffer PointLights{
-  PointLight light[];
+  PointLight plight[];
 };
 
 layout(std430,binding = 3) buffer LightList{
@@ -35,6 +36,7 @@ layout(std430,binding = 4) buffer LightGridList{
   LightGrid Lightgrid[];
 };
 
+uniform int PointLightLength;
 uniform mat4 ViewMatrix;
 uniform int MaxLightPerTile;
 
@@ -59,15 +61,13 @@ float PointSphereDistance(vec3 point, voAABB box){
 bool sphereIntersect( voAABB box,PointLight light)
 {
    float radius = light.radius;
-   vec3 position = vec3(ViewMatrix * vec4(light.position,1.0f));
+   vec3 position = vec3(ViewMatrix * light.position);
    float Distance = PointSphereDistance(position,box);
 
-   return Distance <= (radius*radius);
+   return Distance <= (radius * radius);
 }
 
-void main(){
-
-    uint lightCount = light.length();
+void main(){    
     uint tileIndex = gl_WorkGroupID.x +
                      gl_WorkGroupID.y * gl_NumWorkGroups.x +
                      gl_WorkGroupID.z * (gl_NumWorkGroups.x * gl_NumWorkGroups.y);
@@ -78,14 +78,16 @@ void main(){
     uint startIndex = tileIndex * MaxLightPerTile;
     uint endIndex = startIndex;
 
-    for(uint i = 0;i<light.length();i++){
-    PointLight p = light[i];
-    if(sphereIntersect(box,p)) LightIndexList[endIndex++] = i;
+    for(int i = 0;i< PointLightLength;i++){
+      PointLight p = plight[i];
+      if(sphereIntersect(box,p)) LightIndexList[endIndex++] = i;
     }
+    barrier();
 
     LightGrid idx;
-    idx.count = endIndex-startIndex;
+    idx.count = endIndex - startIndex;
     idx.offset = startIndex;
+      barrier();
 
     Lightgrid[tileIndex] = idx;
 }

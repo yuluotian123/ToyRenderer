@@ -5,13 +5,13 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_stdlib.h"
-#include <iostream>
 #include "Base\Common.h"
 #include "OpenGLInterface\Camera.h"
 #include "OpenGLInterface\Model.h"
 #include "OpenGLInterface\Material.h"
 #include "OpenGLInterface\Shader.h"
 #include "OpenGLInterface\Light.h"
+#include "Passes\ClusterLight.h"
 
 bool DisplayManager::StartUp()
 {
@@ -76,7 +76,9 @@ void DisplayManager::ShowCameraControl()
     ImGui::Text("Up&Down: Q E");
     ImGui::Text("Exit: ESC");
     ImGui::InputFloat3("Camera Pos", (float*)camera->GetPositionp());
-    ImGui::SliderFloat("Movement speed", camera->getSpeedp(), 0.005f, 15.0f);
+    ImGui::SliderFloat("Movement speed", camera->GetSpeedp(), 0.005f, 100.0f);
+    ImGui::SliderFloat("NearPlane", camera->GetNearPlanep(), 0.1f, camera->GetFarPlane());
+    ImGui::SliderFloat("FarPlane", camera->GetFarPlanep(),camera->GetNearPlane(), 3000.f);
     ImGui::End();
 }
 
@@ -160,6 +162,8 @@ void DisplayManager::ShowModelList()
 
 void DisplayManager::ShowLightList()
 {
+    ClusterLight::Update = false;
+
     static bool addlight = false;
     if (addlight) addLight(&addlight);
     if (ImGui::BeginTable("Lights", 2, ImGuiTableFlags_BordersOuter | ImGuiTableFlags_Resizable)) {
@@ -236,6 +240,9 @@ void DisplayManager::ShowLightList()
     }
     if (ImGui::Button("Add Light")) {
         addlight = true;
+    }
+    if (ImGui::Button("Update")) {
+        ClusterLight::Update = true;
     }
 }
 
@@ -430,7 +437,7 @@ bool DisplayManager::CreateWindow()
     m_window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "ToyRenderer", NULL, NULL);
     if (m_window == nullptr)
     {
-        std::cout << "Failed to create GLFW window" << std::endl;
+        printf("Failed to create GLFW window.\n");
         glfwTerminate();
         return false;
     }
@@ -438,7 +445,7 @@ bool DisplayManager::CreateWindow()
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::cout << "Failed to initialize GLAD" << std::endl;
+        printf("Failed to initialize GLAD.\n");
         return false;
     }
     return true;

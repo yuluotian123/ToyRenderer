@@ -1,6 +1,7 @@
 #pragma once
 #include "OpenGLInterface\Material.h"
 //权宜之计1：把所有要用的string提前定义
+//预留贴图位置为9个,再多就会抢占其他贴图位
 namespace pbrUniformNameList {
     const std::string IBL = "useIBL";
 

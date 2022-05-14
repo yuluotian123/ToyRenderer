@@ -11,6 +11,7 @@ layout(std430,binding = 1) buffer clusterAABB{
   voAABB cluster[];
 };
 
+uniform int TileSize;
 uniform float NearPlane;
 uniform float FarPlane;
 uniform int ScreenWidth;
@@ -48,7 +49,7 @@ vec3 IntersectLinePlane(vec3 A,vec3 B,float Distance){
 void main(){
    const vec3 eyePos = vec3(0.0);
 
-   uint tileSize = ScreenWidth/gl_NumWorkGroups.x;
+   uint tileSize = TileSize;
 
    uint tileIndex = gl_WorkGroupID.x +
                      gl_WorkGroupID.y * gl_NumWorkGroups.x +
@@ -66,7 +67,7 @@ void main(){
    float tileNear  = -NearPlane * pow(FarPlane/ NearPlane, gl_WorkGroupID.z/float(gl_NumWorkGroups.z));
    float tileFar   = -NearPlane * pow(FarPlane/ NearPlane, (gl_WorkGroupID.z + 1) /float(gl_NumWorkGroups.z));
 
-    //获取近平面和原平面
+    //获取近平面和远平面
     vec3 minPointNear =  IntersectLinePlane(eyePos, minPoint_VS, tileNear );
     vec3 minPointFar  =  IntersectLinePlane(eyePos, minPoint_VS, tileFar );
     vec3 maxPointNear =  IntersectLinePlane(eyePos, maxPoint_VS, tileNear );

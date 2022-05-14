@@ -10,6 +10,8 @@ namespace CameraUniformNameList {//£¨ÎªÊ²Ã´c++Ã»ÓÐ¾²Ì¬Àà£¿£©²¢²»Ò»¶¨±ØÒª ÒòÎªÃ¿Ö
 	const std::string view = "ViewMatrix";
 	const std::string projection = "ProjectionMatrix";
 	const std::string CamPos = "CameraPos";
+	const std::string NearPlane = "NearPlane";
+	const std::string FarPlane = "FarPlane";
 };
 
 class RenderContext

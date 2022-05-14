@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Passes\CSMshadowMap.h" />
     <ClInclude Include="include\Passes\DrawModelPass.h" />
     <ClInclude Include="include\Passes\BasePass.h" />
     <ClInclude Include="include\Passes\ClusterLight.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="include\Passes\SkyBoxPass.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Passes\CSMshadowMap.cpp" />
     <ClCompile Include="src\Passes\DrawModelPass.cpp" />
     <ClCompile Include="src\Passes\SkyBoxPass.cpp" />
     <ClCompile Include="src\Passes\ClusterLight.cpp" />
@@ -205,6 +207,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\Scenes\ToyRenderer.json" />
+    <None Include="resource\Shaders\CSMshadowmapFs.glsl" />
+    <None Include="resource\Shaders\CSMshadowmapVs.glsl" />
     <None Include="resource\Shaders\EquiRectangularToCubeFs.glsl" />
     <None Include="resource\Shaders\EquiRectangularToCubeVs.glsl" />
     <None Include="resource\Shaders\irradianceFs.glsl" />

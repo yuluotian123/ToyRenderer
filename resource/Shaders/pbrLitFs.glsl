@@ -1,14 +1,4 @@
 #version 430 core
-uniform sampler2D DiffuseMap0;
-uniform sampler2D NormalMap0;
-uniform sampler2D MetalMap0;
-uniform sampler2D RoughMap0;
-uniform sampler2D MetalRoughMap0;//实际上是unknownmap
-
-uniform samplerCube irradianceMap;
-uniform samplerCube specularMap;
-uniform sampler2D brdfLUT;
-
 uniform float Metallic;
 uniform float Roughness;
 uniform bool useMetalMap;
@@ -17,11 +7,54 @@ uniform bool useNormalMap;
 uniform bool useMetalRoughMap;
 uniform bool useIBL;
 
+uniform sampler2D DiffuseMap0;
+uniform sampler2D NormalMap0;
+uniform sampler2D MetalMap0;
+uniform sampler2D RoughMap0;
+uniform sampler2D MetalRoughMap0;//实际上是unknownmap
+uniform samplerCube irradianceMap;
+uniform samplerCube specularMap;
+uniform sampler2D brdfLUT;
+
 uniform vec3 CameraPos;
+uniform float NearPlane;
+uniform float FarPlane;
+uniform int GridSizeX;
+uniform int GridSizeY;
+uniform int GridSizeZ;
+uniform int TileSize;
+uniform float Scale;
+uniform float Bias;
 
 uniform vec3 LightDirection;
 uniform vec3 LightColor;
 uniform float LightIntensity;
+
+//注意内存对齐！！！
+struct PointLight{
+	vec4 position;
+	vec4 color;
+    float radius;
+	float intensity;
+    float padding[2];
+};
+
+layout(std430,binding = 2) buffer PointLights{
+  PointLight plight[];
+};
+
+layout(std430,binding = 3) buffer LightList{
+  uint LightIndexList[];
+};
+
+struct LightGrid{
+  uint count;
+  uint offset;
+};
+
+layout(std430,binding = 4) buffer LightGridList{
+  LightGrid Lightgrid[];
+};
 
 in V_Out{
 in  vec2 TexCoord;
@@ -30,16 +63,35 @@ in  vec3 Normal;
 in  mat3 TBN;
 } f_in;
 
+struct voAABB{
+    vec4 minPoint;
+	vec4 maxPoint;
+};
+
+layout(std430,binding = 1) buffer clusterAABB{
+  voAABB cluster[];
+};
 
 const float PI = 3.14159265359;
 
 out vec4 FragColor;
 
+//将法线贴图转换成法线 疑似不正确
 vec3 getNormalfromNormalMap(){
   vec3 tangentNormal = texture( NormalMap0,f_in.TexCoord).xyz * 2.0 - 1.0;
   
   return normalize(f_in.TBN * tangentNormal);
 }
+
+//获取线性深度
+float linearDepth(float depthSample){
+    float depthRange = 2.0 * depthSample - 1.0;
+    //从ndc变换到view space
+    float linear = 2.0 * NearPlane * FarPlane / (FarPlane + NearPlane - depthRange * (FarPlane - NearPlane));
+
+    return linear;
+}
+
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
     float a = roughness*roughness;
@@ -116,6 +168,61 @@ vec3 DirectPBR(vec3 N,vec3 V,vec3 albedo,float rough,float metal){
           return color;
 }
 
+
+vec3 calcPointLight(uint lightIndex,vec3 WorldPos,vec3 N,vec3 V,vec3 albedo,float rough,float metal) {
+   PointLight p  = plight[lightIndex];
+   vec3 color = vec3(0.0f);
+
+   vec3 F0 = vec3(0.04f); 
+   F0 = mix(F0, albedo, metal);
+
+   float distance = length(p.position.xyz - WorldPos);
+   float attenuation = pow(clamp(1 - pow((distance /p.radius), 4.0), 0.0, 1.0), 2.0)/(1.0  + (distance * distance) );//这个算法不好
+   vec3 radiance = 1000*p.color.rgb *p.intensity *attenuation;
+
+   vec3 L = normalize(p.position.xyz - WorldPos);
+   vec3 H = normalize(V + L);
+
+   float NDF = DistributionGGX(N, H, rough);   
+   float G = GeometrySmith(N, V, L, rough);      
+   vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+
+   vec3 numerator    = NDF * G * F; 
+   float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+   vec3 specular = numerator / denominator;
+
+   vec3 kS = F;
+   vec3 kD = vec3(1.0) - kS;
+   kD *= 1.0 - metal;
+
+   float NdotL = max(dot(N, L), 0.0);  
+
+   color += (kD * albedo / PI + specular) * radiance * NdotL; 
+
+   return color;
+}
+
+vec3 PointPBR(vec3 WorldPos,vec3 N,vec3 V,vec3 albedo,float rough,float metal){
+     vec3 color = vec3(0.0f,0.0f,0.0f);
+
+    //获取z上所处的tile
+    uint zTile     = uint(max(log2(linearDepth(gl_FragCoord.z)) * Scale + Bias, 0.0));
+    //获取xy上所处的tile
+    uvec3 tiles    = uvec3( uvec2( gl_FragCoord.xy /TileSize), zTile);
+    uint tileIndex = tiles.x +
+                     GridSizeX * tiles.y +
+                     (GridSizeX * GridSizeY) * tiles.z;  
+
+    uint lightCount = Lightgrid[tileIndex].count;
+    uint lightOffset = Lightgrid[tileIndex].offset;
+
+    for(uint i = 0; i < lightCount; i++){
+         uint lightIndex =  LightIndexList[lightOffset + i];  
+         color += calcPointLight(lightIndex,WorldPos,N,V,albedo,rough,metal);
+    }
+    return color;
+}
+
 vec3 IBLPBR(vec3 N,vec3 V,vec3 R,vec3 albedo,float rough,float metal){
      vec3 irradiance = texture(irradianceMap, N).rgb;
 
@@ -165,7 +272,10 @@ void main()
      rough = texture(MetalRoughMap0,tex).g;
      }
 
-     vec3 color =  DirectPBR(N,V,albedo,rough,metal);
+     vec3 color = DirectPBR(N,V,albedo,rough,metal);
+
+     color += PointPBR(f_in.WorldPos,N,V,albedo,rough,metal);
+
      if(useIBL)
      color += IBLPBR(N,V,R,albedo,rough,metal);
      else
@@ -176,5 +286,5 @@ void main()
       // gamma correct
       color = pow(color, vec3(1.0/2.2)); 
 
-	 FragColor = vec4(color,1.f);
+	  FragColor = vec4(color ,1.f);
 }

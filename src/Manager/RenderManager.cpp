@@ -1,12 +1,11 @@
 #include "Manager\SceneManager.h"
 #include "Manager\RenderManager.h"
-#include "OpenGLInterface\Camera.h"
-#include "Manager\MaterialSystem.h"
-#include "OpenGLInterface\Shader.h"
-#include "OpenGLInterface\Light.h"
 #include "Passes\ClusterLight.h"
 #include "Passes\SkyBoxPass.h"
 #include "Passes\DrawModelPass.h"
+#include "Passes\CSMshadowMap.h"
+
+unsigned RenderManager::curGlobalTexNum = 10;
 
 bool RenderManager::StartUp()
 {
@@ -15,8 +14,9 @@ bool RenderManager::StartUp()
 	context = std::make_shared<RenderContext>();
 
 	registerPass(std::make_shared<ClusterLight>("ClusterPass",1));
-	registerPass(std::make_shared<DrawModelPass>("DrawModelPass", 2));
-	registerPass(std::make_shared<SkyBoxPass>("SkyBoxPass", 3));
+	registerPass(std::make_shared<CSMshadowMap>("ShadowMapPass", 2));
+	registerPass(std::make_shared<DrawModelPass>("DrawModelPass", 3));
+	registerPass(std::make_shared<SkyBoxPass>("SkyBoxPass", 4));
 
 	for (auto& pass : passes)
 		pass->init(context, Rendercamera);
@@ -32,8 +32,6 @@ void RenderManager::ShutDown()
 void RenderManager::Render(float DeltaTime)
 {
 	RenderTarget::clear();
-
-	setLightProperties();
 
 	for (unsigned i = 0; i < passes.size();i++) {
 		if (passes[i]->getOrder() == -1) { i++; continue; }
@@ -94,21 +92,7 @@ void RenderManager::updatePassData(const std::string& name, const std::any& data
 
 const std::any& RenderManager::getPassDataByName(const std::string& name) {
 	if (PassDatas.find(name) != PassDatas.end()) return PassDatas[name];
-}
-
-void RenderManager::setLightProperties()
-{
-	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
-	{
-			for (auto& light : curScene->getLights()) {
-				if (light->type == "DirectionalLight") {
-					shaderP.second->Use();
-					shaderP.second->setVec3("LightColor", light->color);
-					shaderP.second->setFloat("LightIntensity", light->intensity);
-					shaderP.second->setVec3("LightDirection", std::dynamic_pointer_cast<DirectionalLight>(light)->direction);
-				}
-			}
-		}
+	return NULL;
 }
 
 void RenderManager::registerPass(const std::shared_ptr<BasePass>& pass)

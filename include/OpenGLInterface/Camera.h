@@ -12,6 +12,13 @@ enum class Camera_Movement{
     DOWN
 };
 
+enum class Camera_Rolling {
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
+};
+
 constexpr float YAW = -90.0f;
 constexpr float PITCH = 0.0f;
 constexpr float SPEED = 15.0f;
@@ -27,7 +34,6 @@ public:
     void ProcessKeyboard(Camera_Movement direction, float deltaTime);
     void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
     void ProcessMouseScroll(double yoffset);
-    //void ProcessArcBall(float xoffset, float yoffset);
 
 public:
     Camera(glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), 
@@ -44,6 +50,7 @@ public:
         FarPlane(farp),
         Fov(fov)
     {
+        Distance = glm::distance(Position, glm::vec3(0, -2, -1));
         updateCameraVectors();
     }
 
@@ -61,6 +68,7 @@ public:
         FarPlane(farp),
         Fov(fov)
     {
+        Distance = glm::distance(Position, glm::vec3(0, -2, -1));
         updateCameraVectors();
     }
 
@@ -70,7 +78,9 @@ public:
     glm::mat4 GetInvProjectionMatrix();
 
     glm::vec3* GetPositionp() { return &Position; };
-    float* getSpeedp() { return &MovementSpeed; };
+    float* GetSpeedp() { return &MovementSpeed; };
+    float* GetNearPlanep() { return &NearPlane; };
+    float* GetFarPlanep() { return &FarPlane; };
 
     const glm::vec3 GetPosition() const { return Position; };
     const float GetNearPlane()const { return NearPlane; };
@@ -85,6 +95,7 @@ private:
     glm::vec3 Up;
     glm::vec3 Right;
     glm::vec3 WorldUp;
+    float Distance;
     // euler Angles
     float Yaw;
     float Pitch;

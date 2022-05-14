@@ -25,9 +25,14 @@ public:
 	{
 		return std::any_cast<DataType>(getPassDataByName(name));
 	}
+
+	const static unsigned getCurGlobalTexNum() { return curGlobalTexNum; };
+	const static unsigned getCurGlobalTexNumAndAdd() { return curGlobalTexNum++; };
+	static void addCurGlobalTexNum(unsigned i) { curGlobalTexNum += i; };
 private:
-	void setLightProperties();
 	void registerPass(const std::shared_ptr<BasePass>& pass);
+
+	static unsigned int curGlobalTexNum;
 private:
 	RenderManager()=default;
 	std::shared_ptr<Camera> Rendercamera;

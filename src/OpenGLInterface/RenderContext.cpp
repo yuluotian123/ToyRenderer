@@ -25,11 +25,13 @@ void RenderContext::setupCameraProperties(std::shared_ptr<Camera> camera)
 {
 	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
 	{
-		if (shaderP.second->useCamera) {
+		if (shaderP.second->isMaterial) {
 			shaderP.second->Use();
 			shaderP.second->setMat4(CameraUniformNameList::view, camera->GetViewMatrix());
 			shaderP.second->setMat4(CameraUniformNameList::projection, camera->GetProjectionMatrix());
 			shaderP.second->setVec3(CameraUniformNameList::CamPos, camera->GetPosition());
+			shaderP.second->setFloat(CameraUniformNameList::NearPlane, camera->GetNearPlane());
+			shaderP.second->setFloat(CameraUniformNameList::FarPlane, camera->GetFarPlane());
 		}
 	}
 }
