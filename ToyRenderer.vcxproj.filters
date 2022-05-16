@@ -166,5 +166,6 @@
     <None Include="resource\Shaders\LightCullingCs.glsl" />
     <None Include="resource\Shaders\CSMshadowmapFs.glsl" />
     <None Include="resource\Shaders\CSMshadowmapVs.glsl" />
+    <None Include="resource\Shaders\CSMshadowmapGs.glsl" />
   </ItemGroup>
 </Project>

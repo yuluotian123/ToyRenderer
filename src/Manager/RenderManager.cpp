@@ -45,7 +45,7 @@ void RenderManager::Render(float DeltaTime)
 			passes[i]->finish();
 			break;
 		case RenderPassType::PassType_Parallel: {
-			int j = i;
+			unsigned int j = i;
 			while (j < passes.size())
 			{
 				if (passes[i]->getOrder() != passes[j]->getOrder())break;
@@ -55,7 +55,7 @@ void RenderManager::Render(float DeltaTime)
 			break;
 		}
 		case RenderPassType::PassType_ParallelOnce: {
-			int j = i;
+			unsigned int j = i;
 			while (j < passes.size())
 			{
 				if (passes[i]->getOrder() != passes[j]->getOrder())break;

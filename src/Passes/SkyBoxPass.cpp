@@ -37,6 +37,7 @@ void SkyBoxPass::init(std::shared_ptr<RenderContext>& context, std::shared_ptr<C
 
 	EquiRecToCubeRT.UseDefault();
 
+	//需要放在最后才行，不然不能覆盖所有shader
 	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
 	{
 		//绑定这三张图片在指定的3个位置（直接每帧更新是不是不太好）

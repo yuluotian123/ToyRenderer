@@ -1,21 +1,40 @@
 #version 430 core
+//材质相关
 uniform float Metallic;
 uniform float Roughness;
+
 uniform bool useMetalMap;
 uniform bool useRoughMap;
 uniform bool useNormalMap;
 uniform bool useMetalRoughMap;
-uniform bool useIBL;
-
 uniform sampler2D DiffuseMap0;
 uniform sampler2D NormalMap0;
 uniform sampler2D MetalMap0;
 uniform sampler2D RoughMap0;
 uniform sampler2D MetalRoughMap0;//实际上是unknownmap
+
+uniform bool useIBL;
 uniform samplerCube irradianceMap;
 uniform samplerCube specularMap;
 uniform sampler2D brdfLUT;
 
+//主光源（Direct）相关
+layout (std140, binding = 0) uniform LightSpaceMatrice
+{
+    mat4 lightSpaceMatrices[16];
+};
+
+uniform sampler2DArray DirShadowMap;
+uniform int SplitNum;
+uniform float PlaneDistances[16];
+
+uniform vec3 LightDirection;
+uniform vec3 LightColor;
+uniform float LightIntensity;
+
+uniform mat4 ViewMatrix;
+
+//camera相关
 uniform vec3 CameraPos;
 uniform float NearPlane;
 uniform float FarPlane;
@@ -26,10 +45,7 @@ uniform int TileSize;
 uniform float Scale;
 uniform float Bias;
 
-uniform vec3 LightDirection;
-uniform vec3 LightColor;
-uniform float LightIntensity;
-
+//clusterLight相关
 //注意内存对齐！！！
 struct PointLight{
 	vec4 position;
@@ -63,15 +79,6 @@ in  vec3 Normal;
 in  mat3 TBN;
 } f_in;
 
-struct voAABB{
-    vec4 minPoint;
-	vec4 maxPoint;
-};
-
-layout(std430,binding = 1) buffer clusterAABB{
-  voAABB cluster[];
-};
-
 const float PI = 3.14159265359;
 
 out vec4 FragColor;
@@ -92,6 +99,7 @@ float linearDepth(float depthSample){
     return linear;
 }
 
+//PBR各项
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
     float a = roughness*roughness;
@@ -137,7 +145,67 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }   
 
-vec3 DirectPBR(vec3 N,vec3 V,vec3 albedo,float rough,float metal){
+//通过csm计算shadow
+float calDirShadow(vec3 WorldPos,vec3 N){
+    vec4 posVS = ViewMatrix * vec4(WorldPos, 1.0);
+    float depthValue = abs(posVS.z);
+    int layer = -1;
+
+    for (int i = 0; i < SplitNum; ++i)
+    {
+        if (depthValue <  PlaneDistances[i])
+        {
+            layer = i;
+            break;
+        }
+    }
+    if (layer == -1)
+    {
+        layer = SplitNum;
+    }
+
+    //转换到NDC空间
+     vec4 posLS = lightSpaceMatrices[layer] * vec4(WorldPos, 1.0);
+     vec3 projCoords = posLS.xyz / posLS.w;
+     projCoords = projCoords * 0.5 + 0.5;
+
+     float currentDepth = projCoords.z;
+
+     if (currentDepth > 1.0)//当超过farplane 则无shadow
+    {
+        return 0.f;
+    }
+
+    vec3 LightDir = normalize(LightDirection);
+  
+    //计算bias(目前是固定值，因为之前找到的方法效果很差)
+     float bias = 0.001f;
+
+    //pcf
+    float shadow = 0; 
+
+    //远处阴影很散,所以最外层不使用pcf
+    if(layer == SplitNum-1)
+    {
+     float pcfDepth = texture(DirShadowMap, vec3(projCoords.xy, layer)).r;
+     shadow = (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;   
+    }
+      else{
+      vec2 texelSize = 1.0 / vec2(textureSize(DirShadowMap, 0));
+      for(int x = -1; x <= 1; ++x)
+      {
+        for(int y = -1; y <= 1; ++y)
+           {
+            float pcfDepth = texture(DirShadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
+            shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;        
+           }    
+          }
+    shadow /= 9.0;
+    }
+     return shadow;
+}
+//计算平行光光照结果
+vec3 calDirLight(vec3 N,vec3 V,vec3 WorldPos,vec3 albedo,float rough,float metal){
          vec3 color = vec3(0.0f);
 
          vec3 F0 = vec3(0.04f); 
@@ -165,10 +233,12 @@ vec3 DirectPBR(vec3 N,vec3 V,vec3 albedo,float rough,float metal){
 
           color += (kD * albedo / PI + specular) * radiance * NdotL; 
 
+          float shadow = calDirShadow(WorldPos,N);
+          color *= (1.0 - shadow);
+
           return color;
 }
-
-
+//计算点光源光照结果
 vec3 calcPointLight(uint lightIndex,vec3 WorldPos,vec3 N,vec3 V,vec3 albedo,float rough,float metal) {
    PointLight p  = plight[lightIndex];
    vec3 color = vec3(0.0f);
@@ -201,7 +271,7 @@ vec3 calcPointLight(uint lightIndex,vec3 WorldPos,vec3 N,vec3 V,vec3 albedo,floa
 
    return color;
 }
-
+//通过clusterLight获取点光源列表
 vec3 PointPBR(vec3 WorldPos,vec3 N,vec3 V,vec3 albedo,float rough,float metal){
      vec3 color = vec3(0.0f,0.0f,0.0f);
 
@@ -222,7 +292,7 @@ vec3 PointPBR(vec3 WorldPos,vec3 N,vec3 V,vec3 albedo,float rough,float metal){
     }
     return color;
 }
-
+//IBL 暂时有bug
 vec3 IBLPBR(vec3 N,vec3 V,vec3 R,vec3 albedo,float rough,float metal){
      vec3 irradiance = texture(irradianceMap, N).rgb;
 
@@ -272,8 +342,7 @@ void main()
      rough = texture(MetalRoughMap0,tex).g;
      }
 
-     vec3 color = DirectPBR(N,V,albedo,rough,metal);
-
+     vec3 color = calDirLight(N,V,f_in.WorldPos,albedo,rough,metal);
      color += PointPBR(f_in.WorldPos,N,V,albedo,rough,metal);
 
      if(useIBL)
@@ -286,5 +355,5 @@ void main()
       // gamma correct
       color = pow(color, vec3(1.0/2.2)); 
 
-	  FragColor = vec4(color ,1.f);
+	  FragColor = vec4(color,1.f);
 }

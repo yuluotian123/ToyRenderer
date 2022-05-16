@@ -171,7 +171,7 @@ std::shared_ptr<Model> Scene::getModelByIndex(int index)
     return models[index];
 }
 
-std::shared_ptr<DirectionalLight>& Scene::getMainLight()
+std::shared_ptr<DirectionalLight> Scene::getMainLight()
 {
     std::shared_ptr<DirectionalLight> mainLight;
     for (auto& light : lights) {

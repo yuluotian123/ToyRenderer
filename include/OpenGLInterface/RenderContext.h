@@ -24,8 +24,10 @@ public:
 
 	//UBOandFBO maybe      VBO（not use for now）
 	unsigned GenBuffer(GLenum Target,GLsizeiptr size,GLvoid* Data,GLenum usage,GLint BindingIndex);
+	//需要重新设计 现在完全用不着
 	void UpdateDatainBuffer(GLenum Target, GLint BufferID, GLintptr offset, GLsizeiptr size, const GLvoid* Data );
 	void UpdateDatainBuffer(GLenum Target, GLint BufferID, std::vector<GLintptr> offsets, std::vector <GLsizeiptr> sizes, std::vector<const GLvoid*> Datas);
 	void ChangeDatainBuffer(GLenum Target, GLuint BufferID, GLsizeiptr size, GLvoid* Data,GLenum usage);
+
 	void GetDatainBuffer(GLenum Target,GLint BufferID, GLsizeiptr size, GLvoid** Data);
 };

@@ -41,8 +41,8 @@ void Camera::ProcessMouseScroll(double yoffset)
     Fov -= (float)yoffset;
     if (Fov < 1.0f)
         Fov = 1.0f;
-    if (Fov > 45.0f)
-        Fov = 45.0f;
+    if (Fov > 90.0f)
+        Fov = 90.0f;
 }
 
 //void Camera::ProcessArcBall(float x, float y)//²»ÊÇºÜË¿»¬ 

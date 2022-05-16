@@ -94,7 +94,7 @@ bool RenderTarget::blitTo(const RenderTarget& fbo, GLbitfield mask)
     return true;
 }
 
-void RenderTarget::clear(GLbitfield clearTarget, glm::vec3 color,bool inuse)
+void RenderTarget::clearSelf(bool inuse,GLbitfield clearTarget,glm::vec3 color)
 {
     if (!isValid) return;
 
@@ -105,7 +105,7 @@ void RenderTarget::clear(GLbitfield clearTarget, glm::vec3 color,bool inuse)
         UseDefault();
 }
 
-void RenderTarget::clear(glm::vec3 color, GLbitfield clearTarget)
+void RenderTarget::clear(GLbitfield clearTarget,glm::vec3 color)
 {
     glClearColor(color[0], color[1], color[2], 1.0f);
     glClear(clearTarget);
@@ -356,6 +356,8 @@ bool RenderTarget::GenDepthArray(unsigned width, unsigned height,unsigned depthN
         printf("Framebuffer is not complete!\n");
         return false;
     }
+
+    return true;
 }
 
 bool RenderTarget::GenCubeDepth(unsigned width, unsigned height)

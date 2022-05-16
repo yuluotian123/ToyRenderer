@@ -8,6 +8,16 @@
 
 void DrawModelPass::init(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera)
 {
+	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
+	{
+		if (shaderP.second->isMaterial) {
+			shaderP.second->Use();
+			shaderP.second->setInt("DirShadowMap", RenderManager::getCurGlobalTexNum());
+		}
+	}
+	glActiveTexture(GL_TEXTURE0 + RenderManager::getCurGlobalTexNumAndAdd());
+	glBindTexture(GL_TEXTURE_2D_ARRAY, RenderManager::getOrCreateInstance()->getPassDataByName<Texture>("DirDepthTex").ID);
+
 }
 
 void DrawModelPass::update(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera)
@@ -16,9 +26,13 @@ void DrawModelPass::update(std::shared_ptr<RenderContext>& context, std::shared_
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+
 	context->setupCameraProperties(Rendercamera);
 	setClusterProperties(Rendercamera);
+	setCSMProperties();
+
 	context->DrawOpaqueRenderList(SceneManager::getOrCreateInstance()->getCurrentScene()->getModels());
+
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 }
@@ -45,6 +59,21 @@ void DrawModelPass::setClusterProperties(std::shared_ptr<Camera>& Rendercamera)
 			shaderP.second->setFloat("Scale", Scale);
 			shaderP.second->setFloat("Bias", Bias);
 			shaderP.second->setInt("TileSize", tileSize);
+		}
+	}
+}
+
+void DrawModelPass::setCSMProperties()
+{
+	std::vector<float> FarPlaneList = RenderManager::getOrCreateInstance()->getPassDataByName<std::vector<float>>("DistanceList");
+
+	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList()) {
+		if (shaderP.second->isMaterial) {
+			shaderP.second->Use();
+			for (size_t i = 0; i < FarPlaneList.size(); i++)
+				shaderP.second->setFloat("PlaneDistances[" + std::to_string(i) + "]", FarPlaneList[i]);
+
+			shaderP.second->setInt("SplitNum", FarPlaneList.size());
 		}
 	}
 }
