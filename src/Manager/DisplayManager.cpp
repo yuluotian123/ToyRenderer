@@ -102,21 +102,25 @@ void DisplayManager::ShowMaterialSystem()
     if (ImGui::CollapsingHeader("Shaders")) {
         int i = 0;
         for (auto& spair : MaterialSystem::getOrCreateInstance()->getRegisterShaderList()) {
-            if (scene->getShaderNameByShaderid(spair.first) == "") continue;
+            
             ImGui::PushID(i);
             bool node_open = ImGui::TreeNode(scene->getShaderNameByShaderid(spair.first).c_str());
             if (node_open) {
-                ImGui::Text("ShaderID: %d", spair.first);
-                ImGui::Text("VertexPath:%s", spair.second->VPath.c_str());
-                ImGui::Text("FragementPath:%s", spair.second->FPath.c_str());
-                ImGui::Text("GeometryPath:%s", spair.second->GPath.c_str());
-                ImGui::TreePop();
+                if (spair.second->CPath != "") {
+                    ImGui::Text("ShaderID: %d", spair.first);
+                    ImGui::Text("ComputePath:%s", spair.second->CPath.c_str());
+                    ImGui::TreePop();
+                }
+                else {
+                    ImGui::Text("ShaderID: %d", spair.first);
+                    ImGui::Text("VertexPath:%s", spair.second->VPath.c_str());
+                    ImGui::Text("FragementPath:%s", spair.second->FPath.c_str());
+                    ImGui::Text("GeometryPath:%s", spair.second->GPath.c_str());
+                    ImGui::TreePop();
+                }
             }
             ImGui::PopID();
             i++;
-        }
-        if (ImGui::Button("Register New Shader")) {
-
         }
     }
 
@@ -135,9 +139,6 @@ void DisplayManager::ShowMaterialSystem()
             }
             ImGui::PopID();
             j++;
-        }
-        if (ImGui::Button("Register New Material")) {
-
         }
     }
 

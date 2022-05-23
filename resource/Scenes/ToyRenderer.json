@@ -8,6 +8,13 @@
       "VertexPath": "pbrLitVs.glsl",
       "FragementPath": "pbrLitFs.glsl",
       "GeometryPath": ""
+    },
+    {
+      "Name": "SSSLit",
+      "IsComputer": false,
+      "VertexPath": "BSSRDFLitVs.glsl",
+      "FragementPath": "BSSRDFLitFs.glsl",
+      "GeometryPath": ""
     }
   ],
 
@@ -16,13 +23,18 @@
       "Name": "DefaultPBR",
       "Type": "PBRMaterial",
       "UsingShader": "PBRLit"
+    },
+    {
+      "Name": "SSSPBR",
+      "Type": "SSSMaterial",
+      "UsingShader": "SSSLit"
     }
   ],
   "lights": [
     {
       "Type": "DirectionalLight",
       "Color": [ 1.0, 1.0, 1.0 ],
-      "Intensity": 0.5,
+      "Intensity": 10,
       "Direction": [ 0.0, -1.0, 1.0 ]
     }
   ],
@@ -35,7 +47,7 @@
   ],
   "camera": [
     {
-      "Position": [-100.0, 100.0, 0 ],
+      "Position": [-50.0, 50.0, 10 ],
       "Up": [ 0.0, 1.0, 0.0 ],
       "Yaw": 0.0,
       "Pitch": -30.0,
@@ -46,10 +58,31 @@
   "models": [
     {
       "Material": "DefaultPBR",
-      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/Sponza/Sponza.gltf",
+      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/floor/floor.obj",
       "Position": [ 0.0, 0.0, 0.0 ],
       "Rotation": [ 0.0, 1.0, 1.0, 1.0 ],
+      "Scaling": [ 3.0, 3.0, 3.0 ]
+    },
+    {
+      "Material": "DefaultPBR",
+      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/marry/marry.obj",
+      "Position": [ 0.0, 0.0, 0.0 ],
+      "Rotation": [ 180.0, 0.0, 1.0, 0.0 ],
+      "Scaling": [ 3.5, 3.5, 3.5 ]
+    },
+    {
+      "Material": "DefaultPBR",
+      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/Lucy/Lucy.obj",
+      "Position": [ 0.0, 0.0, 10.0 ],
+      "Rotation": [ 0.0, 1.0, 1.0, 1.0 ],
       "Scaling": [ 0.1, 0.1, 0.1 ]
+    },
+    {
+      "Material": "DefaultPBR",
+      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/MetalRoughSpheres/MetalRoughSpheres.gltf",
+      "Position": [ 0.0, 50.0, 10.0 ],
+      "Rotation": [ 0.0, 1.0, 1.0, 1.0 ],
+      "Scaling": [ 1.0, 1.0, 1.0 ]
     }
     ]
 }

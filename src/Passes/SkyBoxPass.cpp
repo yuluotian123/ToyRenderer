@@ -67,6 +67,7 @@ void SkyBoxPass::update(std::shared_ptr<RenderContext>& context, std::shared_ptr
 	std::shared_ptr<Skybox> skybox = SceneManager::getOrCreateInstance()->getCurrentScene()->getSkybox();
 	std::shared_ptr<Shader> shader = MaterialSystem::getOrCreateInstance()->getRegisterShaderByID(SkyBoxshader);
 	shader->Use();
+	shader->isMaterial = true;
 	shader->setInt("environmentMap", 0);
 	skybox->draw();
 	glDisable(GL_DEPTH_TEST);

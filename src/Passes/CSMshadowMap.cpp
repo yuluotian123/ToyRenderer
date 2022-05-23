@@ -25,7 +25,7 @@ void CSMshadowMap::update(std::shared_ptr<RenderContext>& context, std::shared_p
 	
 	shadowArrayFBO.use();
 	RenderTarget::clear(GL_DEPTH_BUFFER_BIT);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_TEXTURE_2D_ARRAY, shadowArrayFBO.getdepthTexture().ID, 0);
+	//glFramebufferTexture(GL_FRAMEBUFFER, GL_TEXTURE_2D_ARRAY, shadowArrayFBO.getdepthTexture().ID, 0); //这句好像没有什么意义
 
 	context->DrawOpaqueRenderList(shadowMapShader, SceneManager::getOrCreateInstance()->getCurrentScene()->getModels());
 

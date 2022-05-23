@@ -147,26 +147,38 @@ void Model::processVertex(const aiMesh* mesh, std::vector<Vertex>& vertices)
         vector.z = mesh->mVertices[i].z;
         vertex.position = vector;
 
+        //Process normals
+        if (mesh->mNormals != nullptr) {
+            vector.x = mesh->mNormals[i].x;
+            vector.y = mesh->mNormals[i].y;
+            vector.z = mesh->mNormals[i].z;
+            vertex.normal = vector;
+        }
+
         //Process tangent
-        vector.x = mesh->mTangents[i].x;
-        vector.y = mesh->mTangents[i].y;
-        vector.z = mesh->mTangents[i].z;
-        vertex.tangent = vector;
+        if (mesh->mTangents) {
+            vector.x = mesh->mTangents[i].x;
+            vector.y = mesh->mTangents[i].y;
+            vector.z = mesh->mTangents[i].z;
+            vertex.tangent = vector;
+        }
+        else {
+            vertex.tangent = glm::vec3(0.f);
+        }
 
         //Process biTangent
+        if (mesh->mBitangents) {
         vector.x = mesh->mBitangents[i].x;
         vector.y = mesh->mBitangents[i].y;
         vector.z = mesh->mBitangents[i].z;
         vertex.biTangent = vector;
-
-        //Process normals
-        vector.x = mesh->mNormals[i].x;
-        vector.y = mesh->mNormals[i].y;
-        vector.z = mesh->mNormals[i].z;
-        vertex.normal = vector;
+        }
+        else {
+            vertex.biTangent = glm::vec3(0.f);
+        }
 
         //Process texture coords
-        if (mesh->HasTextureCoords(0)) {
+        if (mesh->mTextureCoords[0]) {
             glm::vec2 vec;
             vec.x = mesh->mTextureCoords[0][i].x;
             vec.y = mesh->mTextureCoords[0][i].y;
@@ -226,7 +238,7 @@ void Model::loadTextures(aiMaterial* mat, std::vector<Texture>& textures, aiText
             if (TexturePath == load_textures[k].path)
             {
                 Skip = true;
-                load_textures[k].typeName = typeName+ std::to_string(++TextureIndex);
+                load_textures[k].typeName = typeName + std::to_string(++TextureIndex);
                 textures.push_back(load_textures[k]);
                 break;
             }

@@ -10,6 +10,12 @@ struct Primitive
 	const unsigned int verticesNum;
 };
 
+struct Quad :public Primitive {
+	Quad() : Primitive(6) {};
+
+	virtual void setupMesh() override;
+};
+
 struct Cube : public Primitive {
 	Cube() : Primitive(36) {};
 

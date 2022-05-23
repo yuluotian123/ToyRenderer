@@ -13,5 +13,8 @@ public:
 private:
 	void setClusterProperties(std::shared_ptr<Camera>& camera);
 	void setCSMProperties();
+
+private:
+	RenderTarget FinalFBO;
 };
 

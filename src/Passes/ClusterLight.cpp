@@ -89,12 +89,14 @@ void ClusterLight::setMainLightProperties(std::vector<std::shared_ptr<Light>>& l
 	{
 		for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
 		{
-			for (auto& light : lights) {
-				if (light->type == "DirectionalLight") {
-					shaderP.second->Use();
-					shaderP.second->setVec3("LightColor", light->color);
-					shaderP.second->setFloat("LightIntensity", light->intensity);
-					shaderP.second->setVec3("LightDirection", std::dynamic_pointer_cast<DirectionalLight>(light)->direction);
+			if (shaderP.second->isMaterial) {
+				for (auto& light : lights) {
+					if (light->type == "DirectionalLight") {
+						shaderP.second->Use();
+						shaderP.second->setVec3("LightColor", light->color);
+						shaderP.second->setFloat("LightIntensity", light->intensity);
+						shaderP.second->setVec3("LightDirection", std::dynamic_pointer_cast<DirectionalLight>(light)->direction);
+					}
 				}
 			}
 		}

@@ -9,8 +9,7 @@ uniform samplerCube environmentMap;
 const float PI= 3.14159265359;
 
 void main(){
-    //We use the world space vector as a normal to the surface since in a cubemap it will
-    //be interpolated over every face and make a unit sphere
+    //We use the world space vector as a normal to the surface since in a cubemap it willbe interpolated over every face and make a unit sphere
     vec3 N = normalize(localPos);
 
     vec3 irradiance = vec3(0.0);
