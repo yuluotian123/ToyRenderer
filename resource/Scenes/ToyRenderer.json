@@ -34,7 +34,7 @@
     {
       "Type": "DirectionalLight",
       "Color": [ 1.0, 1.0, 1.0 ],
-      "Intensity": 10,
+      "Intensity": 2,
       "Direction": [ 0.0, -1.0, 1.0 ]
     }
   ],
@@ -42,7 +42,7 @@
     {
       "Hdr": true,
       "Resolution": 2048,
-      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Skybox/tokyo/tokyo.hdr"
+      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Skybox/barcelona/barcelona.hdr"
     }
   ],
   "camera": [
@@ -65,24 +65,10 @@
     },
     {
       "Material": "DefaultPBR",
-      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/marry/marry.obj",
-      "Position": [ 0.0, 0.0, 0.0 ],
-      "Rotation": [ 180.0, 0.0, 1.0, 0.0 ],
-      "Scaling": [ 3.5, 3.5, 3.5 ]
-    },
-    {
-      "Material": "DefaultPBR",
       "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/Lucy/Lucy.obj",
       "Position": [ 0.0, 0.0, 10.0 ],
       "Rotation": [ 0.0, 1.0, 1.0, 1.0 ],
-      "Scaling": [ 0.1, 0.1, 0.1 ]
-    },
-    {
-      "Material": "DefaultPBR",
-      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/MetalRoughSpheres/MetalRoughSpheres.gltf",
-      "Position": [ 0.0, 50.0, 10.0 ],
-      "Rotation": [ 0.0, 1.0, 1.0, 1.0 ],
-      "Scaling": [ 1.0, 1.0, 1.0 ]
+      "Scaling": [ 0.10, 0.10, 0.10 ]
     }
     ]
 }

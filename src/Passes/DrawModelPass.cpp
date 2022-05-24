@@ -9,17 +9,10 @@
 void DrawModelPass::init(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera)
 {
 	FinalFBO.createRenderTarget(SCREEN_WIDTH, SCREEN_HEIGHT,RenderTarget::ENUM_TYPE_BASIC);//暂时没有投入使用，因为还没有打算做后处理相关
+}
 
-	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
-	{
-		if (shaderP.second->isMaterial) {
-			shaderP.second->Use();
-			shaderP.second->setInt("DirShadowMap", RenderManager::getCurGlobalTexNum());
-		}
-	}
-	glActiveTexture(GL_TEXTURE0 + RenderManager::getCurGlobalTexNumAndAdd());
-	glBindTexture(GL_TEXTURE_2D_ARRAY, RenderManager::getOrCreateInstance()->getPassDataByName<Texture>("DirDepthTex").ID);
-
+void DrawModelPass::lateInit(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera)
+{
 }
 
 void DrawModelPass::update(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera)

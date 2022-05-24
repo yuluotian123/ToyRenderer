@@ -9,8 +9,10 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 
+
 //用子类中声明数据的方式 代替了unordered_map<std::string,std::any> 提升一点点性能的同时 使得各个material的子类的功能更明确
 //下次做材质系统用生成器模式会比较好
+
 class Shader;
 class Material
 {
@@ -25,13 +27,22 @@ public:
 public:
 	void setShader(std::shared_ptr<Shader>& _shader) { shader = _shader; };    //在registerMaterial时使用，其他的时候不要用
     const std::shared_ptr<Shader>& getShader() { return shader; };
+	Texture& getDefaultTexture() {
+		if (defaultTexture.ID == 0) {
+			defaultTexture.loadTexture("./resource/Models/WhiteTexture/WhiteTexture.png", false);
+			return defaultTexture;
+		}
+		else
+			return defaultTexture;
+	}
 
 	//给UI界面用
 	void setMaterialType(std::string type) { MaterialType = type; };
 	const std::string& getMaterialType() { return MaterialType; };
 private:
 	std::shared_ptr<Shader> shader;
-
 	Materialid MaterialType;
+
+	static Texture defaultTexture;
 };
 

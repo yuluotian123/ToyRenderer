@@ -24,6 +24,7 @@ public:
 	virtual ~BasePass() {};
 
 	virtual void init(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera) = 0;
+	virtual void lateInit(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera) = 0;
 	virtual void update(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera) = 0;
 
 	const std::string& getPassName() { return PassName; };

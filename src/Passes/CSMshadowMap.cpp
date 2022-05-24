@@ -3,6 +3,7 @@
 #include "Manager\MaterialSystem.h"
 #include "OpenGLInterface\Light.h"
 #include "OpenGLInterface\Camera.h"
+#include "OpenGLInterface\Shader.h"
 
 void CSMshadowMap::init(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera)
 {
@@ -12,6 +13,20 @@ void CSMshadowMap::init(std::shared_ptr<RenderContext>& context, std::shared_ptr
 
 	RenderManager::getOrCreateInstance()->registerPassData("DirDepthTex", shadowArrayFBO.getdepthTexture());
 	RenderManager::getOrCreateInstance()->registerPassData("DistanceList", FarPlaneDistantList);
+}
+
+void CSMshadowMap::lateInit(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera)
+{
+	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
+	{
+		if (shaderP.second->isMaterial) {
+			shaderP.second->Use();
+			shaderP.second->setInt("DirShadowMap", RenderManager::getCurGlobalTexNum());
+		}
+	}
+	glActiveTexture(GL_TEXTURE0 + RenderManager::getCurGlobalTexNumAndAdd());
+	glBindTexture(GL_TEXTURE_2D_ARRAY, RenderManager::getOrCreateInstance()->getPassDataByName<Texture>("DirDepthTex").ID);
+
 }
 
 void CSMshadowMap::update(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera)

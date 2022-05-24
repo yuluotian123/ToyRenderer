@@ -24,6 +24,10 @@ void ClusterLight::init(std::shared_ptr<RenderContext>& context,std::shared_ptr<
 
 }
 
+void ClusterLight::lateInit(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera)
+{
+}
+
 void ClusterLight::update(std::shared_ptr<RenderContext>& context,std::shared_ptr<Camera>& Rendercamera)
 {
 	setMainLightProperties(SceneManager::getOrCreateInstance()->getCurrentScene()->getLights());

@@ -20,6 +20,8 @@ bool RenderManager::StartUp()
 
 	for (auto& pass : passes)
 		pass->init(context, Rendercamera);
+	for (auto& pass : passes)
+		pass->lateInit(context, Rendercamera);
 
 	int count = 0;
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &count);

@@ -15,28 +15,30 @@ void PBRMaterial::UpdateUniform()//¿ÉÒÔ²»ÖðÊµÀý£¿µ«ÊÇÃ¿¸ömaterialÊµÀýµÄÉèÖÃÒ²¿ÉÄ
 	getShader()->setBool(pbrUniformNameList::useMetalRoughMap, useMetalRoughmap);
 	getShader()->setBool(pbrUniformNameList::IBL,IBL);
 
-	for (unsigned int i = 0; i < textureList.size(); i++) {
+	int i = 0;
+	for (auto& tPair:textureMap) {
 		glActiveTexture(GL_TEXTURE0+i);
-		getShader()->setInt(textureList[i].typeName,i);
-		glBindTexture(GL_TEXTURE_2D, textureList[i].ID);
+		getShader()->setInt(tPair.second.typeName,i);
+		glBindTexture(GL_TEXTURE_2D, tPair.second.ID);
+		i++;
 	}
 }
 
 void PBRMaterial::RegisterMeshData(const std::vector<Texture>& MeshTexture)
 {
+
+	for (unsigned i = 0; i < pbrUniformNameList::TextureNameList.size(); i++) {
+		textureMap[pbrUniformNameList::TextureNameList[i]] = getDefaultTexture();
+		textureMap[pbrUniformNameList::TextureNameList[i]].typeName = pbrUniformNameList::TextureNameList[i];
+	}
+
 	for (auto& texture : MeshTexture) {
-		if (texture.typeName == pbrUniformNameList::DiffuseMap)
-			textureList.push_back(texture);
-		else if (texture.typeName == pbrUniformNameList::NormalMap)
-			textureList.push_back(texture);
-		else if (texture.typeName == pbrUniformNameList::MetalMap) 
-			textureList.push_back(texture);
-		else if (texture.typeName == pbrUniformNameList::RoughMap)
-			textureList.push_back(texture);
-		else if (texture.typeName == pbrUniformNameList::MetalRoughMap)
-			textureList.push_back(texture);
-		else if (texture.typeName == pbrUniformNameList::EmissiveMap)
-			textureList.push_back(texture);
+		for (auto& s : pbrUniformNameList::TextureNameList) {
+			if (texture.typeName == s) {
+				textureMap[s] = texture;
+				break;
+			}
+		}
 	}
 }
 
@@ -44,19 +46,20 @@ void PBRMaterial::ShowMaterialProperties(int id)
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet;
 
-	for (unsigned int i = 0; i < textureList.size(); i++) {
+	int i = 0;
+	for (auto& tPair:textureMap) {
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
 		ImGui::AlignTextToFramePadding();
-		ImGui::TreeNodeEx(textureList[i].typeName.c_str(), flags);
+		ImGui::TreeNodeEx(tPair.second.typeName.c_str(), flags);
 		ImGui::TableSetColumnIndex(1);
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::Text(textureList[i].path.c_str());
+		ImGui::Text(tPair.second.path.c_str());
 		ImGui::NextColumn();
 
 		ImGui::TableSetColumnIndex(1);
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::Text("%d", textureList[i].ID);
+		ImGui::Text("%d", tPair.second.ID);
 		ImGui::NextColumn();
 	}
 

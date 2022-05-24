@@ -178,6 +178,7 @@
     <ClInclude Include="materials\SSSMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\OpenGLInterface\Material.cpp" />
     <ClCompile Include="src\Passes\CSMshadowMap.cpp" />
     <ClCompile Include="src\Passes\DrawModelPass.cpp" />
     <ClCompile Include="src\Passes\SkyBoxPass.cpp" />
@@ -194,7 +195,6 @@
     <ClCompile Include="src\OpenGLInterface\RenderTarget.cpp" />
     <ClCompile Include="src\Manager\Scene.cpp" />
     <ClCompile Include="src\OpenGLInterface\Camera.cpp" />
-    <ClCompile Include="src\OpenGLInterface\Material.cpp" />
     <ClCompile Include="src\OpenGLInterface\Model.cpp" />
     <ClCompile Include="src\OpenGLInterface\Mesh.cpp" />
     <ClCompile Include="src\OpenGLInterface\Shader.cpp" />
@@ -214,6 +214,7 @@
     <None Include="resource\Shaders\CSMshadowmapFs.glsl" />
     <None Include="resource\Shaders\CSMshadowmapGs.glsl" />
     <None Include="resource\Shaders\CSMshadowmapVs.glsl" />
+    <None Include="resource\Shaders\DefaultFs.glsl" />
     <None Include="resource\Shaders\EquiRectangularToCubeFs.glsl" />
     <None Include="resource\Shaders\EquiRectangularToCubeVs.glsl" />
     <None Include="resource\Shaders\irradianceFs.glsl" />

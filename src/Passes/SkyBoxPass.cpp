@@ -37,28 +37,31 @@ void SkyBoxPass::init(std::shared_ptr<RenderContext>& context, std::shared_ptr<C
 
 	EquiRecToCubeRT.UseDefault();
 
+}
+
+void SkyBoxPass::lateInit(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera)
+{
 	//需要放在最后才行，不然不能覆盖所有shader
 	for (auto& shaderP : MaterialSystem::getOrCreateInstance()->getRegisterShaderList())
 	{
 		//绑定这三张图片在指定的3个位置（直接每帧更新是不是不太好）
 		//全局的tex应该怎么绑定比较好呢？
-			shaderP.second->Use();
-			shaderP.second->setInt("irradianceMap", RenderManager::getCurGlobalTexNum());
-			shaderP.second->setInt("specularMap", RenderManager::getCurGlobalTexNum()+1);
-			shaderP.second->setInt("brdfLUT", RenderManager::getCurGlobalTexNum()+2);
+		shaderP.second->Use();
+		shaderP.second->setInt("irradianceMap", RenderManager::getCurGlobalTexNum());
+		shaderP.second->setInt("specularMap", RenderManager::getCurGlobalTexNum() + 1);
+		shaderP.second->setInt("brdfLUT", RenderManager::getCurGlobalTexNum() + 2);
 	}
 
 	glActiveTexture(GL_TEXTURE0 + RenderManager::getCurGlobalTexNum());
 	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap.ID);
 
-	glActiveTexture(GL_TEXTURE0 + RenderManager::getCurGlobalTexNum()+1);
+	glActiveTexture(GL_TEXTURE0 + RenderManager::getCurGlobalTexNum() + 1);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, specFilteredMap.ID);
 
-	glActiveTexture(GL_TEXTURE0 + RenderManager::getCurGlobalTexNum()+2);
+	glActiveTexture(GL_TEXTURE0 + RenderManager::getCurGlobalTexNum() + 2);
 	glBindTexture(GL_TEXTURE_2D, brdfLUT.ID);
 
 	RenderManager::addCurGlobalTexNum(3);
-
 }
 
 void SkyBoxPass::update(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera)

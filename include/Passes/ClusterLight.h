@@ -29,6 +29,7 @@ public:
 		:BasePass(PassName,Order){};
 
 	void init(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera) override;
+	void lateInit(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera) override;
 	void update(std::shared_ptr<RenderContext>& context, std::shared_ptr<Camera>& Rendercamera) override;
 
 	void updateLightSSBO(std::vector<std::shared_ptr<Light>>& lights);

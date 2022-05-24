@@ -102,7 +102,7 @@ void DisplayManager::ShowMaterialSystem()
     if (ImGui::CollapsingHeader("Shaders")) {
         int i = 0;
         for (auto& spair : MaterialSystem::getOrCreateInstance()->getRegisterShaderList()) {
-            
+            if (scene->getShaderNameByShaderid(spair.first) == "") continue;
             ImGui::PushID(i);
             bool node_open = ImGui::TreeNode(scene->getShaderNameByShaderid(spair.first).c_str());
             if (node_open) {

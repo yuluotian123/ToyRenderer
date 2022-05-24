@@ -114,9 +114,6 @@
     <ClCompile Include="src\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\OpenGLInterface\Material.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="src\OpenGLInterface\Mesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -155,6 +152,7 @@
     <ClCompile Include="src\Passes\DrawModelPass.cpp" />
     <ClCompile Include="src\Passes\CSMshadowMap.cpp" />
     <ClCompile Include="materials\SSSMaterial.cpp" />
+    <ClCompile Include="src\OpenGLInterface\Material.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\Shaders\pbrLitVs.glsl" />
@@ -173,5 +171,6 @@
     <None Include="resource\Shaders\CSMshadowmapGs.glsl" />
     <None Include="resource\Shaders\BSSRDFLitVs.glsl" />
     <None Include="resource\Shaders\BSSRDFLitFs.glsl" />
+    <None Include="resource\Shaders\DefaultFs.glsl" />
   </ItemGroup>
 </Project>
