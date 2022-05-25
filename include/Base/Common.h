@@ -58,7 +58,7 @@ typedef std::string Materialid;
 //};
 
 //纯粹为了偷懒,必须要事先声明flags才能用
-#define TREEBOOL(variable,id)\
+#define TREEBOOL(variable,id,flags)\
 ImGui::PushID(id);\
 ImGui::TableNextRow();\
 ImGui::TableSetColumnIndex(0);\
@@ -70,7 +70,7 @@ ImGui::Checkbox("##value",&variable); \
 ImGui::NextColumn();\
 ImGui::PopID();\
 
-#define TREESLIDE(variable,variableType,id,min,max)\
+#define TREESLIDE(variable,variableType,id,min,max,flags)\
 ImGui::PushID(id);\
 ImGui::TableNextRow();\
 ImGui::TableSetColumnIndex(0);\
@@ -82,9 +82,7 @@ ImGui::Slider##variableType("##value",&variable,min,max); \
 ImGui::NextColumn();\
 ImGui::PopID();\
 
-
-
-#define TREEINPUT(variable,variableType,id)\
+#define TREEINPUT(variable,variableType,id,flags)\
 ImGui::PushID(id);\
 ImGui::TableNextRow();\
 ImGui::TableSetColumnIndex(0);\
@@ -92,7 +90,22 @@ ImGui::AlignTextToFramePadding();\
 ImGui::TreeNodeEx(#variable, flags);\
 ImGui::TableSetColumnIndex(1);\
 ImGui::SetNextItemWidth(-FLT_MIN);\
-ImGui::Input##variableType("##value",&variable); \
+ImGui::Input##variableType("##value",(float*)&variable); \
 ImGui::NextColumn();\
 ImGui::PopID();\
+
+
+#define TREETEXTURE(Name,ID,flags)\
+ImGui::TableNextRow();\
+ImGui::TableSetColumnIndex(0);\
+ImGui::AlignTextToFramePadding();\
+ImGui::TreeNodeEx(Name.c_str(), flags);\
+ImGui::TableSetColumnIndex(1);\
+ImGui::SetNextItemWidth(-FLT_MIN);\
+ImGui::Text(tPair.second.path.c_str());\
+ImGui::NextColumn();\
+ImGui::TableSetColumnIndex(1);\
+ImGui::SetNextItemWidth(-FLT_MIN);\
+ImGui::Text("%d", ID);\
+ImGui::NextColumn();\
 

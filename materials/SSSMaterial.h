@@ -1,5 +1,6 @@
 #pragma once
 #include "OpenGLInterface\Material.h"
+//materialÄÚ²¿·Öpass£¿
 class SSSMaterial :
     public Material
 {
@@ -11,6 +12,8 @@ public:
     virtual void ShowMaterialProperties(int id) override;
 
 private:
-    std::vector<Texture> textureList;
+    std::unordered_map<std::string, Texture> textureMap;
+
+    glm::vec3 color;
 };
 REGISTER(SSSMaterial)

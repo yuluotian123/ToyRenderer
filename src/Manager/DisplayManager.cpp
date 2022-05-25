@@ -278,7 +278,7 @@ void DisplayManager::AddModel(bool* open)
     static glm::vec3 rotationAxis{ 1.f };
     static float angle = 0.f;
 
-    static std::string path = "C:/Users/ylt195/source/repos/openGL/resource/model/marry/Marry.obj";
+    static std::string path = "G:/gitHubGameProject/ToyRenderer/resource/Models/marry/Marry.obj";
     static std::string material = "";
 
     ImGui::InputFloat3("Position", (float*)&position);
@@ -287,6 +287,8 @@ void DisplayManager::AddModel(bool* open)
     ImGui::InputFloat("Angle", (float*)&angle);
     ImGui::InputText("Path", &path);
     ImGui::InputText("MaterialName",&material);
+
+    std::replace(path.begin(), path.end(), '\\', '/');
 
     if (ImGui::Button("Add"))
     {

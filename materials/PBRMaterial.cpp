@@ -46,29 +46,16 @@ void PBRMaterial::ShowMaterialProperties(int id)
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet;
 
-	int i = 0;
 	for (auto& tPair:textureMap) {
-		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0);
-		ImGui::AlignTextToFramePadding();
-		ImGui::TreeNodeEx(tPair.second.typeName.c_str(), flags);
-		ImGui::TableSetColumnIndex(1);
-		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::Text(tPair.second.path.c_str());
-		ImGui::NextColumn();
-
-		ImGui::TableSetColumnIndex(1);
-		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::Text("%d", tPair.second.ID);
-		ImGui::NextColumn();
+		TREETEXTURE(tPair.second.typeName, tPair.second.ID, flags);
 	}
 
-	TREEBOOL(useMetalmap,-1 * (id + 1))  
-	TREEBOOL(useRoughmap, -2 * (id + 1))
-	TREEBOOL(useNormalmap, -3 * (id + 1))
-	TREEBOOL(useMetalRoughmap, -4 * (id + 1))
-	TREEBOOL(IBL, -5 * (id + 1))
+	TREEBOOL(useMetalmap,-1 * (id + 1),flags)  
+	TREEBOOL(useRoughmap, -2 * (id + 1), flags)
+	TREEBOOL(useNormalmap, -3 * (id + 1), flags)
+	TREEBOOL(useMetalRoughmap, -4 * (id + 1), flags)
+	TREEBOOL(IBL, -5 * (id + 1), flags)
     
-	TREESLIDE(Metallic,Float, -6 * (id + 1),0,1)
-	TREESLIDE(Roughness, Float, -7 * (id + 1), 0, 1)
+	TREESLIDE(Metallic,Float, -6 * (id + 1),0,1, flags)
+	TREESLIDE(Roughness, Float, -7 * (id + 1), 0, 1, flags)
 }
