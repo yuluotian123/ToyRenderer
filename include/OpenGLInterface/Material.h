@@ -29,7 +29,7 @@ public:
     const std::shared_ptr<Shader>& getShader() { return shader; };
 	Texture& getDefaultTexture() {
 		if (defaultTexture.ID == 0) {
-			defaultTexture.loadTexture("./resource/Models/WhiteTexture/WhiteTexture.png", false);
+			defaultTexture.loadTexture("./resource/Textures/WhiteTexture/WhiteTexture.png", false);
 			return defaultTexture;
 		}
 		else

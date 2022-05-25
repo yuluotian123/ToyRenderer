@@ -14,6 +14,7 @@ void Texture::loadTexture(const std::string& filePath, bool sRGB)
 {
 	path = filePath;
     std::string fileExtension = getFileExtension(filePath);
+    std::replace(path.begin(), path.end(), '\\', '/');
     if (fileExtension == "dds") {
         ID = loadDDSTexture(path.c_str());
     }
@@ -63,6 +64,28 @@ void Texture::loadTexture(const std::string& filePath, bool sRGB)
 
         stbi_image_free(data);
     }
+}
+
+void Texture::loadDSLUTTexture(const std::string& filePath)
+{
+    stbi_set_flip_vertically_on_load(true);
+
+    void* data = stbi_load(filePath.c_str(), &width, &height, &nComponents, 0);
+    if (data) {
+        glGenTextures(1, &ID);
+        glBindTexture(GL_TEXTURE_2D, ID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    }
+    else
+        std::cout << "Fail to load at Path:" << path << std::endl;
+
+    stbi_image_free(data);
 }
 
 void Texture::loadHDRTexture(const std::string& filePath)

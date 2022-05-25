@@ -95,17 +95,23 @@ ImGui::NextColumn();\
 ImGui::PopID();\
 
 
-#define TREETEXTURE(Name,ID,flags)\
+#define TREETEXTURE(Tex,typeName,id,addTex,curChangeTex,flags)\
+ImGui::PushID(id);\
 ImGui::TableNextRow();\
 ImGui::TableSetColumnIndex(0);\
 ImGui::AlignTextToFramePadding();\
-ImGui::TreeNodeEx(Name.c_str(), flags);\
+ImGui::TreeNodeEx(typeName.c_str(), flags);\
 ImGui::TableSetColumnIndex(1);\
 ImGui::SetNextItemWidth(-FLT_MIN);\
-ImGui::Text(tPair.second.path.c_str());\
+ImGui::Text(Tex.path.c_str());\
 ImGui::NextColumn();\
 ImGui::TableSetColumnIndex(1);\
 ImGui::SetNextItemWidth(-FLT_MIN);\
-ImGui::Text("%d", ID);\
+ImGui::Text("%d", Tex.ID);\
 ImGui::NextColumn();\
+if (ImGui::Button("Change Texture")) {\
+addTex = true;\
+curChangeTex = tPair.first;\
+}\
+ImGui::PopID();\
 

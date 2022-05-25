@@ -2,6 +2,7 @@
 //材质相关
 uniform float Metallic;
 uniform float Roughness;
+uniform vec3 albedoColor;
 
 uniform bool useMetalMap;
 uniform bool useRoughMap;
@@ -145,6 +146,30 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }   
 
+vec3 DefaultDirPBR(vec3 N,vec3 V,vec3 L,vec3 H,vec3 radiance,vec3 albedo,float rough,float metal){
+         vec3 color = vec3(0.f);
+         vec3 F0 = vec3(0.04f); 
+         F0 = mix(F0, albedo, metal);
+
+         float NDF = DistributionGGX(N, H, rough);   
+         float G = GeometrySmith(N, V, L, rough);      
+         vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+
+         vec3 numerator    = NDF * G * F; 
+         float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+         vec3 specular = numerator / denominator;
+
+          vec3 kS = F;
+          vec3 kD = vec3(1.0) - kS;
+          kD *= 1.0 - metal;
+
+          float NdotL = max(dot(N, L), 0.0);  
+
+          color += (kD * albedo / PI + specular) * radiance * NdotL; 
+
+          return color;
+}
+
 //通过csm计算shadow
 float calDirShadow(vec3 WorldPos,vec3 N){
     vec4 posVS = ViewMatrix * vec4(WorldPos, 1.0);
@@ -208,30 +233,13 @@ float calDirShadow(vec3 WorldPos,vec3 N){
 vec3 calDirLight(vec3 N,vec3 V,vec3 WorldPos,vec3 albedo,float rough,float metal){
          vec3 color = vec3(0.0f);
 
-         vec3 F0 = vec3(0.04f); 
-         F0 = mix(F0, albedo, metal);
-
          vec3 radiance = LightColor*LightIntensity;
 
          vec3 L = normalize(LightDirection);
          L = -L;
          vec3 H = normalize(V + L);
-
-         float NDF = DistributionGGX(N, H, rough);   
-         float G = GeometrySmith(N, V, L, rough);      
-         vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-
-         vec3 numerator    = NDF * G * F; 
-         float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
-         vec3 specular = numerator / denominator;
-
-          vec3 kS = F;
-          vec3 kD = vec3(1.0) - kS;
-          kD *= 1.0 - metal;
-
-          float NdotL = max(dot(N, L), 0.0);  
-
-          color += (kD * albedo / PI + specular) * radiance * NdotL; 
+ 
+         color += DefaultDirPBR(N,V,L,H,radiance,albedo,rough,metal);
 
           float shadow = calDirShadow(WorldPos,N);
           color *= (1.0 - shadow);
@@ -243,9 +251,6 @@ vec3 calcPointLight(uint lightIndex,vec3 WorldPos,vec3 N,vec3 V,vec3 albedo,floa
    PointLight p  = plight[lightIndex];
    vec3 color = vec3(0.0f);
 
-   vec3 F0 = vec3(0.04f); 
-   F0 = mix(F0, albedo, metal);
-
    float distance = length(p.position.xyz - WorldPos);
    float attenuation = pow(clamp(1 - pow((distance /p.radius), 4.0), 0.0, 1.0), 2.0)/(1.0  + (distance * distance) );//这个算法不好
    vec3 radiance = 1000*p.color.rgb *p.intensity *attenuation;
@@ -253,21 +258,7 @@ vec3 calcPointLight(uint lightIndex,vec3 WorldPos,vec3 N,vec3 V,vec3 albedo,floa
    vec3 L = normalize(p.position.xyz - WorldPos);
    vec3 H = normalize(V + L);
 
-   float NDF = DistributionGGX(N, H, rough);   
-   float G = GeometrySmith(N, V, L, rough);      
-   vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-
-   vec3 numerator    = NDF * G * F; 
-   float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
-   vec3 specular = numerator / denominator;
-
-   vec3 kS = F;
-   vec3 kD = vec3(1.0) - kS;
-   kD *= 1.0 - metal;
-
-   float NdotL = max(dot(N, L), 0.0);  
-
-   color += (kD * albedo / PI + specular) * radiance * NdotL; 
+   color += DefaultDirPBR(N,V,L,H,radiance,albedo,rough,metal);; 
 
    return color;
 }
@@ -321,6 +312,7 @@ void main()
 {
      vec2 tex = f_in.TexCoord;
 	 vec3 albedo = pow(texture(DiffuseMap0,tex).rgb,vec3(2.2));
+     albedo *= albedoColor;
 
      vec3 N = normalize(f_in.Normal);
      vec3 V = normalize(CameraPos - f_in.WorldPos);

@@ -1,8 +1,10 @@
 #pragma once
-#include "OpenGLInterface\Material.h"
+#include "PBRMaterial.h"
+
 //material内部分pass？
+//预计算的 皮肤次表面反射材质
 class SSSMaterial :
-    public Material
+    public PBRMaterial
 {
 public:
     SSSMaterial() {};
@@ -12,8 +14,6 @@ public:
     virtual void ShowMaterialProperties(int id) override;
 
 private:
-    std::unordered_map<std::string, Texture> textureMap;
-
-    glm::vec3 color;
+    static Texture DSLut;//TO DO：在json中加入Texture（不知道是否合理）
+    static Texture SSLut;
 };
-REGISTER(SSSMaterial)

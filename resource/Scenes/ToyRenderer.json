@@ -59,16 +59,16 @@
     {
       "Material": "DefaultPBR",
       "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/floor/floor.obj",
-      "Position": [ 0.0, 0.0, 0.0 ],
+      "Position": [ 0.0, 0.0, 0.0 ],  
       "Rotation": [ 0.0, 1.0, 1.0, 1.0 ],
       "Scaling": [ 3.0, 3.0, 3.0 ]
     },
     {
-      "Material": "DefaultPBR",
-      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/Lucy/Lucy.obj",
-      "Position": [ 0.0, 0.0, 10.0 ],
-      "Rotation": [ 0.0, 1.0, 1.0, 1.0 ],
-      "Scaling": [ 0.10, 0.10, 0.10 ]
+      "Material": "SSSPBR",
+      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/Older/jijiBackup.FBX",
+      "Position": [ 0.0, -10.0, 10.0 ],
+      "Rotation": [ -90.0, 1.0, 0.0, 0.0 ],
+      "Scaling": [ 1.0, 1.0, 1.0 ]
     }
     ]
 }

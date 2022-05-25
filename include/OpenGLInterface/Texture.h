@@ -21,6 +21,7 @@ class Texture
 {
 public:
 	void loadTexture(const std::string& filePath, bool sRGB);
+	void loadDSLUTTexture(const std::string& filePath);
 	void loadHDRTexture(const std::string& filePath);
 	unsigned int loadDDSTexture(const char* filePath);	
 	void generateTexture(const int width, const int height, const int attachnum, TEXTURETYPE type);
