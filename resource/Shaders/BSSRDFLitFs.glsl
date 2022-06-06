@@ -2,6 +2,7 @@
 //材质相关
 uniform float Metallic;
 uniform float Roughness;
+uniform float scatterScale;
 uniform vec3 albedoColor;
 
 uniform bool useMetalMap;
@@ -19,6 +20,7 @@ uniform samplerCube irradianceMap;
 uniform samplerCube specularMap;
 uniform sampler2D brdfLUT;
 uniform sampler2D dsLUT;
+uniform sampler2D ssLUT;
 
 //主光源（Direct）相关
 layout (std140, binding = 0) uniform LightSpaceMatrice
@@ -147,28 +149,29 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }   
 
-vec3 SSSPBR(vec3 N,vec3 V,vec3 L,vec3 H,vec3 WorldPos,vec3 radiance,vec3 albedo,float rough,float metal){
+vec3 SSSPBR(vec3 N,vec3 V,vec3 L,vec3 WorldPos,vec3 radiance,vec3 albedo,float rough,float metal){
          vec3 color = vec3(0.f);
          vec3 F0 = vec3(0.04f); 
          F0 = mix(F0, albedo, metal);
 
-         float NDF = DistributionGGX(N, H, rough);   
-         float G = GeometrySmith(N, V, L, rough);      
-         vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+         vec3 h = V + L;
+         vec3 H = normalize(h);
 
-         vec3 numerator    = NDF * G * F; 
-         float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
-         vec3 specular = numerator / denominator;
-
-          vec3 kS = F;
-          vec3 kD = vec3(1.0) - kS;
-          kD *= 1.0 - metal;
-
-          float NdotL = max(dot(N, L), 0.0);  
+          float NdotL = max(dot(N,L), 0.0);  
+          float NdotH = max(dot(N,H),0.0);
 
           float cuv = clamp(length(fwidth(N)) / length(fwidth(WorldPos)), 0.0, 1.0);
 
           vec3 SSS = texture(dsLUT,vec2(NdotL*0.5+0.5,cuv)).rgb;
+
+          float p = texture(ssLUT,vec2( clamp(NdotH,0,1), rough)).r;
+          float PH = pow(2.0 * p, 10.0 );
+          vec3 Fr = fresnelSchlick(max(dot(H, V), 0.0), vec3(0.028));
+          vec3 specular = max( PH * Fr / dot( h, h ), vec3(0.f)) * scatterScale;
+
+          vec3 kS = Fr;
+          vec3 kD = vec3(1.0) - kS;
+          kD *= 1.0 - metal;
 
           color += (kD * albedo / PI + specular) * radiance * SSS; 
 
@@ -242,9 +245,8 @@ vec3 calDirLight(vec3 N,vec3 V,vec3 WorldPos,vec3 albedo,float rough,float metal
 
          vec3 L = normalize(LightDirection);
          L = -L;
-         vec3 H = normalize(V + L);
  
-         color += SSSPBR(N,V,L,H,WorldPos,radiance,albedo,rough,metal);
+         color += SSSPBR(N,V,L,WorldPos,radiance,albedo,rough,metal);
 
           float shadow = calDirShadow(WorldPos,N);
           color *= (1.0 - shadow);
@@ -261,9 +263,8 @@ vec3 calSinglePointLight(uint lightIndex,vec3 WorldPos,vec3 N,vec3 V,vec3 albedo
    vec3 radiance = 1000*p.color.rgb *p.intensity *attenuation;
 
    vec3 L = normalize(p.position.xyz - WorldPos);
-   vec3 H = normalize(V + L);
 
-   color += SSSPBR(N,V,L,H,WorldPos,radiance,albedo,rough,metal);; 
+   color += SSSPBR(N,V,L,WorldPos,radiance,albedo,rough,metal);; 
 
    return color;
 }

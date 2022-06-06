@@ -86,6 +86,7 @@ void PBRMaterial::ChangeTex(bool* tex,const std::string& type)
 			Texture texture;
 			texture.loadTexture(path, false);
 			texture.typeName = type;
+			if (textureMap[type].path != "./resource/Textures/WhiteTexture/WhiteTexture.png") textureMap[type].Free();
 			textureMap[type] = texture;
 		}
 
