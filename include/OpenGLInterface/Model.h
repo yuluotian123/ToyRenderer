@@ -42,6 +42,7 @@ public:
     void Draw();//模型的渲染，调用mesh的draw方法
     void DefaultDraw() const;//用shader来进行模型渲染(不再调用material)
     void Update(float DeltaTime); //处理模型的移动等动画
+    bool fetchModel(glm::vec2 posSS);
 
     void SetMaterials(const Materialid& Materialid);//一次性设置Model中所有mesh的material
 

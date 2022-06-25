@@ -10,6 +10,13 @@
       "GeometryPath": ""
     },
     {
+      "Name": "DefaultShader",
+      "IsComputer": false,
+      "VertexPath": "pbrLitVs.glsl",
+      "FragementPath": "DefaultFs.glsl",
+      "GeometryPath": ""
+    },
+    {
       "Name": "SSSLit",
       "IsComputer": false,
       "VertexPath": "BSSRDFLitVs.glsl",
@@ -19,6 +26,11 @@
   ],
 
   "materials": [
+    {
+      "Name": "DefaultMaterial",
+      "Type": "PBRMaterial",
+      "UsingShader": "DefaultShader"
+    },
     {
       "Name": "DefaultPBR",
       "Type": "PBRMaterial",
@@ -58,16 +70,9 @@
   "models": [
     {
       "Material": "DefaultPBR",
-      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/floor/floor.obj",
-      "Position": [ 0.0, 0.0, 0.0 ],  
+      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/marry/marry.obj",
+      "Position": [ 0.0, 0.0, 0.0 ],
       "Rotation": [ 0.0, 1.0, 1.0, 1.0 ],
-      "Scaling": [ 3.0, 3.0, 3.0 ]
-    },
-    {
-      "Material": "SSSPBR",
-      "Path": "G:/gitHubGameProject/ToyRenderer/resource/Models/Older/jijiBackup.FBX",
-      "Position": [ 0.0, -10.0, 10.0 ],
-      "Rotation": [ -90.0, 1.0, 0.0, 0.0 ],
       "Scaling": [ 1.0, 1.0, 1.0 ]
     }
     ]

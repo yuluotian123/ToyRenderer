@@ -3,6 +3,7 @@
 #include "OpenGLInterface\Camera.h"
 #include "OpenGLInterface\Model.h"
 #include "Manager\MaterialSystem.h"
+#include "Manager\RenderManager.h"
 #include "OpenGLInterface\Light.h"
 #include "OpenGLInterface\Skybox.h"
 #include <iostream>
@@ -169,6 +170,12 @@ std::shared_ptr<Model> Scene::getModelByIndex(int index)
 {
     if (index > models.size()) { printf("can't find model at index:%d.return null.\n",index);  return nullptr; }
     return models[index];
+}
+
+void Scene::fetchModelInScene(glm::vec2 posSS)
+{
+    click = true;
+    RenderManager::getOrCreateInstance()->updatePassData("mousePos", posSS);
 }
 
 std::shared_ptr<DirectionalLight> Scene::getMainLight()

@@ -1,4 +1,5 @@
 #include "OpenGLInterface\RenderContext.h"
+#include "OpenGLInterface\Model.h"
 #include "Manager\MaterialSystem.h"
 #include "OpenGLInterface\Shader.h"
 #include "OpenGLInterface\Camera.h"

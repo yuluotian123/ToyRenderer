@@ -27,6 +27,13 @@ void AABB::combine(const AABB& aabb)
 	max = glm::max(max, aabb.max);
 }
 
+bool AABB::inside(const glm::vec3& pos)
+{
+	return pos.x<=max.x&&pos.x>=min.x&&
+		   pos.y<=max.y&&pos.y>=max.y&&
+		   pos.z<=max.z&&pos.z>=max.z;
+}
+
 float AABB::getVolume()
 {
 	return (max.x-min.x)* (max.y - min.y)* (max.z - min.z);

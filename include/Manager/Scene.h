@@ -22,6 +22,7 @@ public:
 
 	std::vector<std::shared_ptr<Model>>& getModels(){ return models; };
 	std::shared_ptr<Model> getModelByIndex(int index);
+	void fetchModelInScene(glm::vec2 posSS);
 
 	std::vector<std::shared_ptr<Light>>& getLights() { return lights; };
 	std::shared_ptr <DirectionalLight> getMainLight();
@@ -41,6 +42,7 @@ public:
 	void addLight(glm::vec3 position, float radius, glm::vec3 color, float intensity);
 
 	bool load_Error = false;
+	bool click = false;
 private:
 	bool loadContext();
 

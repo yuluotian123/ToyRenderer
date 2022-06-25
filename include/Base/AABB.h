@@ -11,6 +11,7 @@ public:
 
 	void combine(const glm::vec3& point);
 	void combine(const AABB& AABB);
+	bool inside(const glm::vec3& pos);
 
 	float getVolume();
 	const glm::vec3 getMin() const { return min; };

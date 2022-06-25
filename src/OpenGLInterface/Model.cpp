@@ -1,3 +1,6 @@
+#include "glad\glad.h"
+#include "Manager\SceneManager.h"
+#include "OpenGLInterface\Camera.h"
 #include "OpenGLInterface\Material.h"
 #include "OpenGLInterface\Model.h"
 #include "Manager\MaterialSystem.h"

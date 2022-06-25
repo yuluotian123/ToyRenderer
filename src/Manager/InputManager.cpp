@@ -63,6 +63,7 @@ void InputManager::glfw_mouseInput(GLFWwindow* window, float deltatime)
 {
 	if(glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_LEFT)== GLFW_PRESS)
 	{ 
+		SceneManager::getOrCreateInstance()->getCurrentScene()->fetchModelInScene(glm::vec2{ ImGui::GetIO().MousePos.x,ImGui::GetIO().MousePos.y });
 		float lastX = 0.5f * ImGui::GetIO().MouseDelta.x;
 		float lastY = -0.5f * ImGui::GetIO().MouseDelta.y;
 		UsingCamera->ProcessMouseMovement(lastX, lastY);
