@@ -34,6 +34,7 @@ bool RenderManager::StartUp()
 void RenderManager::ShutDown()
 {
 	glfwTerminate();
+
 }
 
 void RenderManager::Render(float DeltaTime)
